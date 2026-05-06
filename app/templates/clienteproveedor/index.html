@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes / Proveedores - Farmacia{% endblock %}
+{% block page_title %}Gestión de Clientes y Proveedores{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-muted mb-0">Administra tus contactos comerciales</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoContacto">
+            <i class="bi bi-plus-lg"></i>
+            Nuevo Contacto
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">Total Contactos</div>
+                <div class="stat-value">
+                    {{ (clientes|selectattr("tipo", "equalto", "C")|list|length) +
+                       (clientes|selectattr("tipo", "equalto", "P")|list|length) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <div class="stat-label">Clientes</div>
+                <div class="stat-value">{{ clientes|selectattr("tipo", "equalto", "C")|list|length }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card warning">
+                <div class="stat-label">Proveedores</div>
+                <div class="stat-value">{{ clientes|selectattr("tipo", "equalto", "P")|list|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-people-fill me-2"></i>Listado de Contactos</span>
+
+            <!-- Buscador -->
+            <div class="position-relative" style="width: 350px;">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="buscarContacto" placeholder="Escribe nombre o NIT..."
+                        autocomplete="off" oninput="buscarContactos(this.value)">
+                    <button class="btn btn-outline-secondary" type="button" onclick="mostrarTodosContactos()">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                </div>
+                <div id="dropdownContactos" class="dropdown-menu w-100 shadow"
+                    style="max-height: 300px; overflow-y: auto; display: none;">
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="tablaContactos">
+                    <thead>
+                        <tr>
+                            <th>NIT</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Celular</th>
+                            <th>Tipo</th>
+                            {% if session.get('rol') == 'admin' %}
+                            <th class="text-end">Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes|sort(attribute='nombre') %}
+                        <tr data-nombre="{{ cliente.nombre|lower }}" data-nit="{{ cliente.nit }}"
+                            data-id="{{ cliente.id }}">
+                            <td><span class="fw-semibold">{{ cliente.nit }}</span></td>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.direccion or '-' }}</td>
+                            <td>{{ cliente.celular or '-' }}</td>
+                            <td>
+                                {% if cliente.tipo == 'C' %}
+                                <span class="badge-soft bg-primary-subtle text-primary">Cliente</span>
+                                {% elif cliente.tipo == 'P' %}
+                                <span class="badge-soft bg-warning-subtle text-warning">Proveedor</span>
+                                {% else %}
+                                <span class="badge-soft bg-secondary-subtle text-secondary">{{ cliente.tipo }}</span>
+                                {% endif %}
+                            </td>
+                            {% if session.get('rol') == 'admin' %}
+                            <td class="text-end">
+                                <a href="{{ url_for('clienteproveedor.editar', id=cliente.id) }}"
+                                    class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger"
+                                    onclick="eliminarContacto('{{ cliente.id }}')" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="{% if session.get('rol') == 'admin' %}6{% else %}5{% endif %}"
+                                class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                No hay contactos registrados
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo Contacto -->
+<div class="modal fade" id="modalNuevoContacto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus me-2"></i>Nuevo Contacto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('clienteproveedor.crear') }}">
+                {{ form.hidden_tag() }}
+                <div class="modal-body">
+
+                    <!-- Tipo de contacto -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Tipo de Contacto</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                    name="tipo" id="tipoCliente" value="C" checked>
+                                <label class="form-check-label fw-semibold" for="tipoCliente">
+                                    <i class="bi bi-person me-1"></i>Cliente
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                    name="tipo" id="tipoProveedor" value="P">
+                                <label class="form-check-label fw-semibold" for="tipoProveedor">
+                                    <i class="bi bi-truck me-1"></i>Proveedor
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-5">
+                            {{ form.tipo_identificacion.label(class="form-label fw-semibold") }}
+                            {{ form.tipo_identificacion(class="form-select") }}
+                        </div>
+                        <div class="col-md-7">
+                            {{ form.nit.label(class="form-label fw-semibold") }}
+                            <span class="text-danger">*</span>
+                            {{ form.nit(class="form-control", placeholder="Ej: 900123456") }}
+                        </div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="mb-3">
+                        {{ form.nombre.label(class="form-label fw-semibold") }}
+                        <span class="text-danger">*</span>
+                        {{ form.nombre(class="form-control",
+                            placeholder="Ej: Juan Pérez o Droguería Central") }}
+                    </div>
+
+                    <!-- Dirección y Celular -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            {{ form.direccion.label(class="form-label fw-semibold") }}
+                            {{ form.direccion(class="form-control",
+                                placeholder="Ej: Calle 10 # 5-20") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.celular.label(class="form-label fw-semibold") }}
+                            {{ form.celular(class="form-control",
+                                placeholder="Ej: 3001234567") }}
+                        </div>
+                    </div>
+
+                    <!-- Correo -->
+                    <div class="mb-3">
+                        {{ form.correo.label(class="form-label fw-semibold") }}
+                        {{ form.correo(class="form-control",
+                            placeholder="Ej: contacto@empresa.com") }}
+                        <small class="text-muted">Opcional — usado para envío de facturas</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>Guardar Contacto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const clientesMap = {
+        {% for cliente in clientes %}
+        {{ cliente.id }}: {
+            id: {{ cliente.id }},
+            nit: "{{ cliente.nit }}",
+            nombre: "{{ cliente.nombre | replace('"', '\\"') }}",
+            direccion: "{{ (cliente.direccion or '') | replace('"', '\\"') }}",
+            celular: "{{ cliente.celular or '' }}",
+            tipo: "{{ cliente.tipo }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    function buscarContactos(query) {
+        const dropdown = document.getElementById('dropdownContactos');
+        if (query.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
+        const filtro = query.toLowerCase();
+        const resultados = Object.values(clientesMap).filter(c =>
+            c.nombre.toLowerCase().includes(filtro) ||
+            c.nit.toLowerCase().includes(filtro)
+        ).slice(0, 10);
+        dropdown.innerHTML = resultados.length === 0 ?
+            '<div class="dropdown-item text-muted">No se encontraron contactos</div>' :
+            resultados.map(c => `
+                <a href="#" class="dropdown-item py-2"
+                    onclick="seleccionarContacto(${c.id}); return false;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>${c.nombre}</strong>
+                            <div class="small text-muted">NIT: ${c.nit} •
+                                ${c.tipo === 'C' ? 'Cliente' : 'Proveedor'}</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </div>
+                </a>`).join('');
+        dropdown.style.display = 'block';
+    }
+
+    function mostrarTodosContactos() {
+        const dropdown = document.getElementById('dropdownContactos');
+        dropdown.innerHTML = Object.values(clientesMap).map(c => `
+            <a href="#" class="dropdown-item py-2"
+                onclick="seleccionarContacto(${c.id}); return false;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${c.nombre}</strong>
+                        <div class="small text-muted">NIT: ${c.nit} •
+                            ${c.tipo === 'C' ? 'Cliente' : 'Proveedor'}</div>
+                    </div>
+                </div>
+            </a>`).join('');
+        dropdown.style.display = 'block';
+    }
+
+    function seleccionarContacto(id) {
+        document.querySelectorAll('#tablaContactos tbody tr').forEach(row => {
+            row.classList.remove('table-primary');
+            if (parseInt(row.getAttribute('data-id')) === id) {
+                row.classList.add('table-primary');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+        document.getElementById('dropdownContactos').style.display = 'none';
+        document.getElementById('buscarContacto').value = '';
+    }
+
+    function eliminarContacto(id) {
+        if (confirm('¿Estás seguro de eliminar este contacto?')) {
+            fetch(`/clienteproveedor/eliminar/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) location.reload();
+                else alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
+            })
+            .catch(() => alert('Error al eliminar el contacto'));
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.position-relative')) {
+            document.getElementById('dropdownContactos').style.display = 'none';
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Movimiento - Farmacia{% endblock %}
+{% block page_title %}Registrar Movimiento{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-11">
+
+    <!-- Progress Steps -->
+    <div class="d-flex justify-content-center mb-4">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge rounded-pill bg-primary" id="step1">1</span>
+        <span class="text-muted">Cliente</span>
+        <i class="bi bi-chevron-right text-muted"></i>
+        <span class="badge rounded-pill bg-secondary" id="step2">2</span>
+        <span class="text-muted">Productos</span>
+        <i class="bi bi-chevron-right text-muted"></i>
+        <span class="badge rounded-pill bg-secondary" id="step3">3</span>
+        <span class="text-muted">Confirmar</span>
+      </div>
+    </div>
+
+    <form method="POST" id="formMovimiento">
+      {{ form.hidden_tag() }}
+      <div class="card">
+        <div class="card-body p-4 p-md-5">
+
+          <!-- SECCIÓN 1: CLIENTE -->
+          <div class="mb-5">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">1</span>
+              Seleccionar Cliente / Proveedor
+            </h5>
+
+            <!-- Toggle ocasional -->
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="esOcasional"
+                     onchange="toggleOcasional()">
+              <label class="form-check-label fw-semibold" for="esOcasional">
+                Movimiento rápido — Usuario Ocasional
+              </label>
+            </div>
+            <input type="hidden" name="es_ocasional" id="esOcasionalInput" value="0">
+
+            <div id="seccionCliente" class="row g-3">
+              <div class="col-md-6 position-relative">
+                <label class="form-label fw-semibold field-label">Buscar cliente / proveedor</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                  </span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="buscarCliente"
+                    placeholder="Nombre o documento..." autocomplete="off">
+                  <button type="button" class="btn btn-outline-secondary" onclick="cargarTodosClientes()">
+                    <i class="bi bi-list-ul"></i>
+                  </button>
+                </div>
+                <div id="listaClientes" class="list-group shadow-lg position-absolute w-100 mt-1"
+                  style="max-height:250px;overflow-y:auto;display:none;z-index:1050;border-radius:12px;">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold field-label">Cliente seleccionado</label>
+                <div id="infoCliente" class="p-3 rounded-3 info-panel border" style="min-height:58px;">
+                  <span class="text-muted"><i class="bi bi-person me-2"></i>Sin seleccionar</span>
+                </div>
+                <input type="hidden" name="id_cliente" id="idCliente">
+              </div>
+            </div>
+
+            <div id="seccionOcasional" style="display:none;">
+              <div class="alert alert-info d-flex align-items-center gap-2 mb-0">
+                <i class="bi bi-info-circle-fill"></i>
+                Este movimiento quedará registrado como <strong class="ms-1">Usuario Ocasional</strong>.
+                Puedes editarlo después en Clientes / Proveedores.
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: PRODUCTOS -->
+          <div class="mb-5">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">2</span>
+              Productos
+            </h5>
+
+            <!-- Buscador -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6 position-relative">
+                <label class="form-label fw-semibold field-label">Buscar producto</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                  </span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="buscarInsumo"
+                    placeholder="Nombre o código..." autocomplete="off">
+                  <button type="button" class="btn btn-outline-secondary" onclick="cargarTodosInsumos()">
+                    <i class="bi bi-list-ul"></i>
+                  </button>
+                </div>
+                <div id="listaInsumos" class="list-group shadow-lg position-absolute w-100 mt-1"
+                  style="max-height:250px;overflow-y:auto;display:none;z-index:1050;border-radius:12px;">
+                </div>
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <div class="text-muted small">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Selecciona un producto para agregarlo a la lista.
+                  Puedes agregar múltiples productos.
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de productos agregados -->
+            <div id="listaProductos" class="mb-3"></div>
+
+            <div id="sinProductos" class="text-center py-4 text-muted border rounded-3">
+              <i class="bi bi-box fs-2 d-block mb-2"></i>
+              No hay productos agregados
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: DETALLES -->
+          <div class="mb-4">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">3</span>
+              Detalles de la Operación
+            </h5>
+
+            <div class="row g-4">
+              <div class="col-md-4">
+                <label class="form-label field-label">Tipo de operación</label>
+                <select name="tipo" id="tipoOperacion" class="form-select" onchange="onTipoChange()">
+                  <option value="salida">Venta (Salida)</option>
+                  <option value="entrada">Compra (Entrada)</option>
+                  <option value="devolucion">Devolución</option>
+                  <option value="baja">Baja (Daño / Vencimiento)</option>
+                </select>
+              </div>
+
+              <div class="col-md-4" id="seccionComprobante">
+                <label class="form-label field-label">N° Comprobante</label>
+                <input type="text" name="numero" id="numeroComprobante"
+                       class="form-control" placeholder="FAC-001">
+                <small id="infoComprobante" class="text-muted" style="display:none;">
+                  <i class="bi bi-magic me-1"></i>
+                  Para bajas el sistema genera el comprobante automáticamente.
+                </small>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label field-label">Vencimiento del lote</label>
+                <input type="date" name="fecha_vencimiento" id="fechaVencimiento" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label field-label">Observaciones</label>
+                <textarea name="observaciones" class="form-control" rows="2"
+                  placeholder="Notas adicionales..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESUMEN TOTAL -->
+          <div id="resumenTotal" class="mb-4" style="display:none;">
+            <div class="card border-primary">
+              <div class="card-body">
+                <div class="row text-end">
+                  <div class="col-md-8 offset-md-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted">Subtotal:</span>
+                      <span id="resSubtotal" class="fw-semibold">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span class="text-muted">IVA:</span>
+                      <span id="resIva" class="fw-semibold">$0.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                      <span class="fw-bold text-primary fs-5">TOTAL:</span>
+                      <span id="resTotal" class="fw-bold text-primary fs-5">$0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="d-flex gap-3 pt-3 border-top">
+            <button type="submit" class="btn btn-primary btn-lg px-5" id="btnGuardar" disabled>
+              <i class="bi bi-check-circle-fill me-2"></i>Guardar Movimiento
+            </button>
+            <a href="{{ url_for('movimientos.index') }}" class="btn btn-outline-secondary btn-lg">
+              Cancelar
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .field-label { color: var(--text-primary) !important; }
+  .info-panel  { background: var(--bg-hover); }
+  .producto-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .producto-item:hover { border-color: var(--color-primary); }
+</style>
+
+<script>
+  let clienteSeleccionado = null;
+  let productos = [];  // [{id, descripcion, codigo, valor, iva, stock, precio, cantidad, fecha_vencimiento}]
+
+  const currentTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  // ── CLIENTE ──────────────────────────────────────────────────────────────
+
+  function toggleOcasional() {
+    const cb = document.getElementById('esOcasional').checked;
+    document.getElementById('esOcasionalInput').value = cb ? "1" : "0";
+    document.getElementById('seccionCliente').style.display   = cb ? 'none' : '';
+    document.getElementById('seccionOcasional').style.display = cb ? '' : 'none';
+    if (cb) {
+      document.getElementById('step1').classList.replace('bg-secondary', 'bg-success');
+      document.getElementById('step1').classList.replace('bg-primary',   'bg-success');
+    } else {
+      document.getElementById('step1').className = 'badge rounded-pill bg-primary';
+    }
+    validarFormulario();
+  }
+
+  document.getElementById("buscarCliente").addEventListener("input", function () {
+    let texto = this.value.trim();
+    if (texto.length < 2) { document.getElementById("listaClientes").style.display = "none"; return; }
+    fetch(`/movimientos/api/clientes/buscar?q=${encodeURIComponent(texto)}`)
+      .then(r => r.json()).then(data => mostrarClientes(data));
+  });
+
+  function cargarTodosClientes() {
+    fetch(`/movimientos/api/clientes`).then(r => r.json()).then(data => mostrarClientes(data));
+  }
+
+  function mostrarClientes(clientes) {
+    let lista = document.getElementById("listaClientes");
+    lista.innerHTML = clientes.length ? clientes.map(c => `
+      <a href="#" class="list-group-item list-group-item-action py-3"
+         onclick="seleccionarCliente(${JSON.stringify(c).replace(/"/g,'&quot;')}); return false;">
+        <div class="d-flex justify-content-between">
+          <strong>${c.nombre}</strong>
+          <span class="text-primary">${c.nit || ''}</span>
+        </div>
+      </a>`).join('') : '<div class="list-group-item text-muted py-3">No encontrado</div>';
+    lista.style.display = "block";
+  }
+
+  function seleccionarCliente(cliente) {
+    clienteSeleccionado = cliente;
+    document.getElementById("idCliente").value = cliente.id;
+    document.getElementById("buscarCliente").value = "";
+    document.getElementById("listaClientes").style.display = "none";
+    document.getElementById("infoCliente").innerHTML = `
+      <div class="d-flex align-items-center">
+        <div class="user-avatar me-3" style="width:48px;height:48px;font-size:20px;">${cliente.nombre[0]}</div>
+        <div>
+          <div class="fw-bold fs-5">${cliente.nombre}</div>
+          <div class="text-muted">${cliente.nit || ''} ${cliente.telefono ? '• ' + cliente.telefono : ''}</div>
+        </div>
+      </div>`;
+    document.getElementById("step1").className = 'badge rounded-pill bg-success';
+    document.getElementById("step2").classList.replace("bg-secondary", "bg-primary");
+    validarFormulario();
+  }
+
+  // ── PRODUCTOS ─────────────────────────────────────────────────────────────
+
+  document.getElementById("buscarInsumo").addEventListener("input", function () {
+    let texto = this.value.trim();
+    if (texto.length < 2) { document.getElementById("listaInsumos").style.display = "none"; return; }
+    fetch(`/movimientos/api/insumos/buscar?q=${encodeURIComponent(texto)}`)
+      .then(r => r.json()).then(data => mostrarInsumos(data));
+  });
+
+  function cargarTodosInsumos() {
+    fetch(`/movimientos/api/insumos`).then(r => r.json()).then(data => mostrarInsumos(data));
+  }
+
+  function mostrarInsumos(insumos) {
+    let lista = document.getElementById("listaInsumos");
+    lista.innerHTML = insumos.length ? insumos.map(i => `
+      <a href="#" class="list-group-item list-group-item-action py-3"
+         onclick="agregarProducto(${JSON.stringify(i).replace(/"/g,'&quot;')}); return false;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${i.descripcion}</strong>
+            <div class="small text-muted">${i.codigo} • Stock: <span class="${i.stock > 0 ? 'text-success' : 'text-danger'} fw-bold">${i.stock}</span></div>
+          </div>
+          <span class="fs-6 fw-bold text-primary">${formatCOP(i.valor)}</span>
+        </div>
+      </a>`).join('') : '<div class="list-group-item text-muted py-3">No encontrado</div>';
+    lista.style.display = "block";
+  }
+
+  function agregarProducto(insumo) {
+    // Evitar duplicados — si ya existe, solo aumentar cantidad
+    let existente = productos.find(p => p.id === insumo.id);
+    if (existente) {
+      existente.cantidad += 1;
+      renderProductos();
+      document.getElementById("buscarInsumo").value = "";
+      document.getElementById("listaInsumos").style.display = "none";
+      return;
+    }
+    productos.push({
+      id                : insumo.id,
+      descripcion       : insumo.descripcion,
+      codigo            : insumo.codigo,
+      valor             : insumo.valor,
+      iva               : parseFloat(insumo.iva) || 0,
+      stock             : insumo.stock,
+      precio            : insumo.valor,
+      cantidad          : 1,
+      fecha_vencimiento : insumo.fecha_vencimiento || ""
+    });
+    document.getElementById("buscarInsumo").value = "";
+    document.getElementById("listaInsumos").style.display = "none";
+    document.getElementById("step2").className = 'badge rounded-pill bg-success';
+    document.getElementById("step3").classList.replace("bg-secondary", "bg-primary");
+    renderProductos();
+    validarFormulario();
+  }
+
+  function eliminarProducto(idx) {
+    productos.splice(idx, 1);
+    renderProductos();
+    validarFormulario();
+  }
+
+  function actualizarProducto(idx, campo, valor) {
+    productos[idx][campo] = campo === 'cantidad' ? parseInt(valor) || 1
+                          : campo === 'precio'   ? parseFloat(valor) || 0
+                          : valor;
+    renderTotales();
+  }
+
+  function renderProductos() {
+    let contenedor = document.getElementById("listaProductos");
+    let sinProd    = document.getElementById("sinProductos");
+
+    if (productos.length === 0) {
+      contenedor.innerHTML = "";
+      sinProd.style.display = "";
+      document.getElementById("resumenTotal").style.display = "none";
+      return;
+    }
+
+    sinProd.style.display = "none";
+    document.getElementById("resumenTotal").style.display = "";
+
+    contenedor.innerHTML = productos.map((p, i) => `
+      <div class="producto-item">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-4">
+            <div class="fw-bold">${p.descripcion}</div>
+            <div class="small text-muted">Ref: ${p.codigo} • IVA: ${p.iva}%</div>
+            <div class="small ${p.stock > 0 ? 'text-success' : 'text-danger'}">
+              <i class="bi bi-box me-1"></i>Stock disponible: <strong>${p.stock}</strong>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold">Precio</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">$</span>
+              <input type="number" step="0.01" min="0"
+                     class="form-control"
+                     value="${p.precio}"
+                     onchange="actualizarProducto(${i}, 'precio', this.value)"
+                     name="productos[${i}][precio]">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold">Cantidad</label>
+            <div class="input-group input-group-sm">
+              <button type="button" class="btn btn-outline-secondary btn-sm"
+                      onclick="cambiarCantidad(${i}, -1)">
+                <i class="bi bi-dash"></i>
+              </button>
+              <input type="number" min="1"
+                     class="form-control text-center"
+                     value="${p.cantidad}"
+                     onchange="actualizarProducto(${i}, 'cantidad', this.value)"
+                     name="productos[${i}][cantidad]">
+              <button type="button" class="btn btn-outline-secondary btn-sm"
+                      onclick="cambiarCantidad(${i}, 1)">
+                <i class="bi bi-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold">Vencimiento</label>
+            <input type="date" class="form-control form-control-sm"
+                   value="${p.fecha_vencimiento}"
+                   onchange="actualizarProducto(${i}, 'fecha_vencimiento', this.value)"
+                   name="productos[${i}][fecha_vencimiento]">
+          </div>
+          <div class="col-md-2 text-end">
+            <label class="form-label small fw-semibold text-primary">Subtotal</label>
+            <div class="fw-bold text-primary">
+              ${formatCOP(calcularSubtotalProducto(p))}
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger mt-1"
+                    onclick="eliminarProducto(${i})">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+          <input type="hidden" name="productos[${i}][id_insumo]" value="${p.id}">
+        </div>
+      </div>
+    `).join('');
+
+    renderTotales();
+  }
+
+  function formatCOP(valor) {
+    return '$' + Math.round(valor).toLocaleString('es-CO');
+  }
+
+  function calcularSubtotalProducto(p) {
+    let sub = p.precio * p.cantidad;
+    return sub + (sub * p.iva / 100);
+  }
+
+  function cambiarCantidad(idx, delta) {
+    let nuevo = (productos[idx].cantidad || 1) + delta;
+    if (nuevo < 1) nuevo = 1;
+    productos[idx].cantidad = nuevo;
+    renderProductos();
+  }
+
+  function renderTotales() {
+    let subtotalPuro = 0, totalIva = 0;
+    productos.forEach(p => {
+      let sub = p.precio * p.cantidad;
+      let iva = sub * (p.iva / 100);
+      subtotalPuro += sub;
+      totalIva     += iva;
+    });
+    document.getElementById("resSubtotal").textContent = formatCOP(subtotalPuro);
+    document.getElementById("resIva").textContent      = formatCOP(totalIva);
+    document.getElementById("resTotal").textContent    = formatCOP(subtotalPuro + totalIva);
+  }
+
+  // ── TIPO DE OPERACIÓN ────────────────────────────────────────────────────
+
+  function onTipoChange() {
+    let tipo = document.getElementById("tipoOperacion").value;
+    let inputComp  = document.getElementById("numeroComprobante");
+    let infoComp   = document.getElementById("infoComprobante");
+    if (tipo === "baja") {
+      inputComp.value       = "";
+      inputComp.disabled    = true;
+      inputComp.placeholder = "Generado automáticamente";
+      infoComp.style.display = "";
+    } else {
+      inputComp.disabled    = false;
+      inputComp.placeholder = "FAC-001";
+      infoComp.style.display = "none";
+    }
+  }
+
+  // ── VALIDACIÓN ───────────────────────────────────────────────────────────
+
+  function validarFormulario() {
+    let tieneCliente = document.getElementById('esOcasional').checked
+                    || document.getElementById('idCliente').value;
+    let tieneProductos = productos.length > 0;
+    document.getElementById("btnGuardar").disabled = !(tieneCliente && tieneProductos);
+  }
+
+  // ── CERRAR DROPDOWNS ────────────────────────────────────────────────────
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#buscarCliente")) document.getElementById("listaClientes").style.display = "none";
+    if (!e.target.closest("#buscarInsumo"))  document.getElementById("listaInsumos").style.display  = "none";
+  });
+</script>
+
+{% endblock %}

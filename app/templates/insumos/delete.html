@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Eliminar Insumo{% endblock %}
+{% block page_title %}Eliminar Insumo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+
+      <div class="card border-danger">
+        <div class="card-header text-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          Confirmar eliminación
+        </div>
+        <div class="card-body p-4">
+
+          <p class="mb-3">¿Seguro que deseas eliminar el siguiente insumo?</p>
+
+          <div class="p-3 rounded-3 mb-4" style="background: var(--bg-hover);">
+            <ul class="mb-0 list-unstyled">
+              <li class="mb-1">
+                <strong>Código:</strong> {{ insumo.codigo }}
+              </li>
+              <li class="mb-1">
+                <strong>Descripción:</strong> {{ insumo.descripcion }}
+              </li>
+              <li>
+                <strong>Stock:</strong> {{ insumo.cantidad }}
+              </li>
+            </ul>
+          </div>
+
+          <form method="POST"
+                action="{{ url_for('insumos.delete', id=insumo.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-danger px-4">
+                <i class="bi bi-trash me-2"></i>Sí, eliminar
+              </button>
+              <a href="{{ url_for('insumos.index') }}"
+                 class="btn btn-outline-secondary px-4">
+                Cancelar
+              </a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

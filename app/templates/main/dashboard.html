@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Farmacia{% endblock %}
+{% block page_title %}Panel de Control{% endblock %}
+
+{% block content %}
+
+{# ══════════════════════════════════════════
+   ALERTAS — solo aparecen si hay problemas
+   ══════════════════════════════════════════ #}
+{% if vencidos or por_vencer or stock_bajo %}
+<div class="mb-4">
+
+  {% if vencidos %}
+  <div class="alert-banner danger mb-3">
+    <div class="alert-banner-icon">
+      <i class="bi bi-x-octagon-fill"></i>
+    </div>
+    <div class="alert-banner-body">
+      <div class="alert-banner-title">
+        {{ vencidos|length }} producto{{ 's' if vencidos|length > 1 else '' }} vencido{{ 's' if vencidos|length > 1 else '' }}
+      </div>
+      <div class="alert-banner-items">
+        {% for ins in vencidos %}
+        <span class="alert-tag">{{ ins.descripcion }} — venció {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
+      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+  {% endif %}
+
+  {% if por_vencer %}
+  <div class="alert-banner warning mb-3">
+    <div class="alert-banner-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <div class="alert-banner-body">
+      <div class="alert-banner-title">
+        {{ por_vencer|length }} producto{{ 's' if por_vencer|length > 1 else '' }} por vencer en los próximos 30 días
+      </div>
+      <div class="alert-banner-items">
+        {% for ins in por_vencer %}
+        <span class="alert-tag">{{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
+      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+  {% endif %}
+
+  {% if stock_bajo %}
+  <div class="alert-banner info mb-3">
+    <div class="alert-banner-icon">
+      <i class="bi bi-box-seam-fill"></i>
+    </div>
+    <div class="alert-banner-body">
+      <div class="alert-banner-title">
+        {{ stock_bajo|length }} producto{{ 's' if stock_bajo|length > 1 else '' }} con stock bajo (≤ 5 unidades)
+      </div>
+      <div class="alert-banner-items">
+        {% for ins in stock_bajo %}
+        <span class="alert-tag">{{ ins.descripcion }} — {{ ins.cantidad }} uds.</span>
+        {% endfor %}
+      </div>
+    </div>
+    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
+      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
+
+{# ══════════════════════════════════════════
+   STAT CARDS
+   ══════════════════════════════════════════ #}
+<div class="row g-4 mb-4">
+
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Total Insumos</div>
+          <div class="stat-value">{{ total_insumos }}</div>
+          <div class="small text-muted mt-2">
+            <i class="bi bi-box-seam me-1"></i> Activos en inventario
+          </div>
+        </div>
+        <div class="p-3 rounded" style="background: rgba(37, 99, 235, 0.1);">
+          <i class="bi bi-box-seam fs-2 text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card success">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Clientes Activos</div>
+          <div class="stat-value">{{ total_clientes }}</div>
+          <div class="small text-muted mt-2">
+            <i class="bi bi-people me-1"></i> Registrados
+          </div>
+        </div>
+        <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1);">
+          <i class="bi bi-people fs-2 text-success"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card warning">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Movimientos Hoy</div>
+          <div class="stat-value">{{ movimientos_hoy }}</div>
+          <div class="small text-muted mt-2">
+            <i class="bi bi-clock me-1"></i> Actualizado ahora
+          </div>
+        </div>
+        <div class="p-3 rounded" style="background: rgba(245, 158, 11, 0.1);">
+          <i class="bi bi-arrow-left-right fs-2 text-warning"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# ══════════════════════════════════════════
+   RESUMEN DE ALERTAS (mini cards)
+   ══════════════════════════════════════════ #}
+{% if vencidos or por_vencer or stock_bajo %}
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="text-muted small fw-semibold me-1">
+        <i class="bi bi-bell-fill me-1"></i>ALERTAS ACTIVAS:
+      </span>
+      {% if vencidos %}
+      <span class="badge-alert danger">
+        <i class="bi bi-x-octagon me-1"></i>{{ vencidos|length }} vencido{{ 's' if vencidos|length > 1 else '' }}
+      </span>
+      {% endif %}
+      {% if por_vencer %}
+      <span class="badge-alert warning">
+        <i class="bi bi-clock me-1"></i>{{ por_vencer|length }} por vencer
+      </span>
+      {% endif %}
+      {% if stock_bajo %}
+      <span class="badge-alert info">
+        <i class="bi bi-box me-1"></i>{{ stock_bajo|length }} stock bajo
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# ══════════════════════════════════════════
+   GRÁFICA + ÚLTIMOS MOVIMIENTOS
+   ══════════════════════════════════════════ #}
+<div class="row g-4 mb-4">
+
+  {# GRÁFICA DE MOVIMIENTOS ÚLTIMOS 7 DÍAS #}
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="bi bi-bar-chart-fill me-2"></i>Movimientos — Últimos 7 días
+        </h5>
+        <span class="badge bg-primary-subtle text-primary small">Entradas vs Salidas</span>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
+        <canvas id="chartMovimientos" style="max-height: 260px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {# TOP 5 INSUMOS MÁS VENDIDOS #}
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-trophy-fill me-2 text-warning"></i>Top 5 Insumos más vendidos
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Insumo</th>
+                <th class="text-end">Unidades</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in top_insumos %}
+              <tr>
+                <td>
+                  <span class="fw-bold" style="color: var(--color-primary);">{{ loop.index }}</span>
+                </td>
+                <td class="fw-semibold">{{ item.descripcion }}</td>
+                <td class="text-end">
+                  <span class="badge bg-success-subtle text-success">{{ item.total }}</span>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="3" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox fs-3 d-block mb-2"></i>Sin datos
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# ══════════════════════════════════════════
+   ÚLTIMOS MOVIMIENTOS
+   ══════════════════════════════════════════ #}
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="bi bi-clock-history me-2"></i>Últimos Movimientos
+        </h5>
+        <a href="{{ url_for('movimientos.index') }}" class="btn btn-sm btn-outline-primary">
+          Ver todos <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in ultimos_movimientos %}
+              <tr>
+                <td><span class="fw-semibold">#{{ '%03d' % m.id }}</span></td>
+                <td>{{ insumos_map.get(m.id_insumo, '—') }}</td>
+                <td>{{ m.cantidad }}</td>
+                <td>${{ "%.2f"|format(m.precio) }}</td>
+                <td>{{ m.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="5" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                  No hay movimientos registrados
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════
+   CHART.JS — Gráfica de movimientos
+   ══════════════════════════════════════════ #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  // Datos enviados desde Flask
+  const labels   = {{ chart_labels   | tojson }};
+  const entradas = {{ chart_entradas | tojson }};
+  const salidas  = {{ chart_salidas  | tojson }};
+
+  // Detectar tema actual para colores
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+
+  function getColors() {
+    return {
+      gridColor:  isDark() ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+      textColor:  isDark() ? '#94a3b8' : '#64748b',
+    };
+  }
+
+  const ctx = document.getElementById('chartMovimientos').getContext('2d');
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Entradas',
+          data: entradas,
+          backgroundColor: 'rgba(16, 185, 129, 0.7)',
+          borderColor:     'rgba(16, 185, 129, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+        {
+          label: 'Salidas',
+          data: salidas,
+          backgroundColor: 'rgba(37, 99, 235, 0.7)',
+          borderColor:     'rgba(37, 99, 235, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: getColors().textColor,
+            font: { family: 'Inter', size: 12 },
+            usePointStyle: true,
+            pointStyleWidth: 10,
+          }
+        },
+        tooltip: {
+          backgroundColor: isDark() ? '#1e293b' : '#ffffff',
+          titleColor:      isDark() ? '#f8fafc'  : '#0f172a',
+          bodyColor:       isDark() ? '#94a3b8'  : '#64748b',
+          borderColor:     isDark() ? '#475569'  : '#e2e8f0',
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 8,
+        }
+      },
+      scales: {
+        x: {
+          grid:  { color: getColors().gridColor },
+          ticks: { color: getColors().textColor, font: { family: 'Inter', size: 11 } }
+        },
+        y: {
+          beginAtZero: true,
+          grid:  { color: getColors().gridColor },
+          ticks: {
+            color: getColors().textColor,
+            font: { family: 'Inter', size: 11 },
+            stepSize: 1,
+          }
+        }
+      }
+    }
+  });
+
+  // Actualizar colores al cambiar de tema
+  const observer = new MutationObserver(() => {
+    const c = getColors();
+    chart.options.plugins.legend.labels.color          = c.textColor;
+    chart.options.scales.x.grid.color                  = c.gridColor;
+    chart.options.scales.x.ticks.color                 = c.textColor;
+    chart.options.scales.y.grid.color                  = c.gridColor;
+    chart.options.scales.y.ticks.color                 = c.textColor;
+    chart.options.plugins.tooltip.backgroundColor      = isDark() ? '#1e293b' : '#ffffff';
+    chart.options.plugins.tooltip.titleColor           = isDark() ? '#f8fafc'  : '#0f172a';
+    chart.options.plugins.tooltip.bodyColor            = isDark() ? '#94a3b8'  : '#64748b';
+    chart.options.plugins.tooltip.borderColor          = isDark() ? '#475569'  : '#e2e8f0';
+    chart.update();
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+
+{# ══════════════════════════════════════════
+   ESTILOS DE ALERTAS
+   ══════════════════════════════════════════ #}
+<style>
+  .alert-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+  }
+
+  .alert-banner.danger {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+  }
+
+  .alert-banner.warning {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.25);
+  }
+
+  .alert-banner.info {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.25);
+  }
+
+  [data-theme="dark"] .alert-banner.danger {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.3);
+  }
+
+  [data-theme="dark"] .alert-banner.warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  [data-theme="dark"] .alert-banner.info {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+
+  .alert-banner-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .alert-banner.danger  .alert-banner-icon { color: #ef4444; }
+  .alert-banner.warning .alert-banner-icon { color: #f59e0b; }
+  .alert-banner.info    .alert-banner-icon { color: #2563eb; }
+
+  .alert-banner-body { flex: 1; }
+
+  .alert-banner-title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .alert-banner-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .alert-tag {
+    font-size: 0.8125rem;
+    padding: 3px 10px;
+    border-radius: 50px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+  }
+
+  .alert-banner-btn {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    transition: all 0.2s;
+    align-self: center;
+  }
+
+  .alert-banner-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .badge-alert {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .badge-alert.danger  { background: rgba(239, 68, 68, 0.1);  color: #ef4444; }
+  .badge-alert.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  .badge-alert.info    { background: rgba(37, 99, 235, 0.1);  color: #2563eb; }
+
+  [data-theme="dark"] .badge-alert.danger  { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+  [data-theme="dark"] .badge-alert.warning { background: rgba(251, 191, 36, 0.15);  color: #fbbf24; }
+  [data-theme="dark"] .badge-alert.info    { background: rgba(37, 99, 235, 0.15);   color: #60a5fa; }
+
+  .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+  .text-primary { color: var(--color-primary) !important; }
+</style>
+
+{% endblock %}

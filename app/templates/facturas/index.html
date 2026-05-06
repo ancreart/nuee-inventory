@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Facturas - Farmacia{% endblock %}
+{% block page_title %}Gestión de Facturas{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">Administra las facturas de venta</p>
+    <a href="{{ url_for('facturas.nueva') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nueva Factura
+    </a>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-label">Total Facturas</div>
+            <div class="stat-value">{{ total_facturas }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card warning">
+            <div class="stat-label">Pendientes</div>
+            <div class="stat-value">{{ total_pendientes }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card success">
+            <div class="stat-label">Pagadas</div>
+            <div class="stat-value">{{ total_pagadas }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card danger">
+            <div class="stat-label">Anuladas</div>
+            <div class="stat-value">{{ total_anuladas }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Listado de Facturas</h5>
+        <div class="input-group" style="width:300px;">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="buscador"
+              placeholder="Buscar por N°, cliente, estado...">
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="tablaFacturas">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>N° Factura</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Subtotal</th>
+                        <th>IVA</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        {% if session.get('rol') == 'admin' %}
+                        <th>Registrado por</th>
+                        <th>Acciones</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in facturas %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary font-monospace"
+                              title="ID interno">#{{ '%04d'|format(f.id) }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold"
+                              style="color:var(--color-primary);">{{ f.numero }}</span>
+                        </td>
+                        <td>
+                            {% if f.id_cliente in clientes %}
+                                {{ clientes[f.id_cliente].nombre }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ f.fecha.strftime('%d/%m/%Y') }}
+                            {% if session.get('rol') == 'admin' and f.fecha %}
+                                <br><small class="text-muted">{{ f.fecha.strftime('%I:%M %p') }}</small>
+                            {% endif %}
+                        </td>
+                        <td>${{ "%.2f"|format(f.subtotal) }}</td>
+                        <td>${{ "%.2f"|format(f.total_iva) }}</td>
+                        <td class="fw-semibold">${{ "%.2f"|format(f.total) }}</td>
+                        <td>
+                            {% if f.estado == 'Pagada' %}
+                            <span class="badge bg-success">Pagada</span>
+                            {% elif f.estado == 'Pendiente' %}
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% else %}
+                            <span class="badge bg-danger">Anulada</span>
+                            {% endif %}
+                        </td>
+                        {% if session.get('rol') == 'admin' %}
+                        <td>
+                            <span class="text-muted small">
+                                <i class="bi bi-person me-1"></i>
+                                {{ f.nombre_usuario or '—' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle"
+                                        data-bs-toggle="dropdown">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="estado" value="Pendiente">
+                                                <button class="dropdown-item" type="submit">
+                                                    <i class="bi bi-clock me-2 text-warning"></i>Pendiente
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="estado" value="Pagada">
+                                                <button class="dropdown-item" type="submit">
+                                                    <i class="bi bi-check-circle me-2 text-success"></i>Pagada
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="estado" value="Anulada">
+                                                <button class="dropdown-item" type="submit">
+                                                    <i class="bi bi-x-circle me-2 text-danger"></i>Anulada
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <form method="POST"
+                                    action="{{ url_for('facturas.eliminar', id=f.id) }}"
+                                    onsubmit="return confirm('¿Eliminar esta factura?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="{% if session.get('rol') == 'admin' %}10{% else %}8{% endif %}"
+                            class="text-center py-5 text-muted">
+                            <i class="bi bi-receipt fs-1 d-block mb-2"></i>
+                            No hay facturas registradas
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('buscador').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('#tablaFacturas tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

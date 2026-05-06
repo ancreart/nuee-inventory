@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificar Código - Farmacia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-display: 'Poppins', sans-serif;
+      --color-primary: #2563eb;
+      --color-primary-dark: #1d4ed8;
+      --color-secondary: #f59e0b;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border-color: #e2e8f0;
+      --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+      --radius-lg: 16px;
+    }
+    [data-theme="dark"] {
+      --color-primary: #2563eb;
+      --color-primary-dark: #1d4ed8;
+      --bg-card: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-color: #475569;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-primary);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    }
+    .login-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 48px;
+      width: 100%; max-width: 440px;
+      position: relative; overflow: hidden;
+      animation: slideUp 0.4s ease;
+      border: 1px solid var(--border-color);
+    }
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .brand-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      border-radius: var(--radius);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 30px; color: white; margin-bottom: 16px;
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.75rem; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 6px;
+    }
+    .brand-subtitle { color: var(--text-secondary); font-size: 0.9375rem; }
+    .form-label { font-weight: 500; color: var(--text-primary); margin-bottom: 8px; display: block; }
+    .code-input {
+      width: 100%;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 16px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .code-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      outline: none;
+    }
+    [data-theme="dark"] .code-input {
+      background: #334155;
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+    .btn-login {
+      width: 100%; padding: 14px;
+      background: var(--color-primary);
+      border: none; border-radius: var(--radius);
+      color: white; font-weight: 600; font-size: 1rem;
+      margin-top: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; transition: all 0.2s ease;
+    }
+    .btn-login:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .login-footer {
+      text-align: center; margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+    .login-footer a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
+    .login-footer a:hover { text-decoration: underline; }
+    .theme-toggle {
+      position: fixed; top: 20px; right: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px; padding: 4px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .theme-toggle-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: none; background: transparent;
+      color: rgba(255,255,255,0.8); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease; font-size: 1rem;
+    }
+    .theme-toggle-btn.active { background: white; color: #1e293b; }
+    .alert { border-radius: var(--radius); border: none; margin-bottom: 16px; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="theme-toggle">
+    <button class="theme-toggle-btn" id="btn-light" onclick="setTheme('light')" title="Modo claro">
+      <i class="bi bi-sun-fill"></i>
+    </button>
+    <button class="theme-toggle-btn" id="btn-dark" onclick="setTheme('dark')" title="Modo oscuro">
+      <i class="bi bi-moon-fill"></i>
+    </button>
+  </div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="brand-icon"><i class="bi bi-shield-lock"></i></div>
+      <h1 class="brand-title">Ingresa tu código</h1>
+      <p class="brand-subtitle">Revisa tu correo y escribe el código de 6 dígitos</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.verify_code') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="email" value="{{ email }}">
+      <div class="mb-4">
+        <label class="form-label fw-semibold text-center d-block">Código de verificación</label>
+        <input type="text" name="codigo" class="code-input"
+               maxlength="6" placeholder="000000"
+               autocomplete="off" required autofocus>
+      </div>
+      <button type="submit" class="btn-login">
+        <i class="bi bi-check-circle"></i> Verificar código
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <a href="{{ url_for('auth.forgot_password') }}">
+        <i class="bi bi-arrow-left me-1"></i>Solicitar nuevo código
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function setTheme(theme, save = true) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('btn-light').classList.toggle('active', theme === 'light');
+      document.getElementById('btn-dark').classList.toggle('active', theme === 'dark');
+      if (save) localStorage.setItem('theme', theme);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme, false);
+
+    // Solo permite números en el campo código
+    document.querySelector('.code-input').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+  </script>
+</body>
+</html>

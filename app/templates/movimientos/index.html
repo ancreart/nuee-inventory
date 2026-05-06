@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Movimientos - Farmacia{% endblock %}
+{% block page_title %}Gestión de Movimientos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-muted mb-0">Administre las entradas y salidas de inventario</p>
+        <a href="{{ url_for('movimientos.crear') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nuevo Movimiento
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-label">Total Movimientos</div>
+                <div class="stat-value">{{ movimientos|length }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card success">
+                <div class="stat-label">Entradas</div>
+                <div class="stat-value">
+                    {{ movimientos|selectattr("tipo", "equalto", "entrada")|list|length }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card warning">
+                <div class="stat-label">Salidas</div>
+                <div class="stat-value">
+                    {{ movimientos|selectattr("tipo", "equalto", "salida")|list|length }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card danger">
+                <div class="stat-label">Devoluciones</div>
+                <div class="stat-value">
+                    {{ movimientos|selectattr("tipo", "equalto", "devolucion")|list|length }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-arrow-left-right me-2"></i>Listado de Movimientos</span>
+            <div class="input-group" style="width:300px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="buscador" placeholder="Buscar...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="tablaMovimientos">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Cliente / Proveedor</th>
+                            <th>Producto</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-center">Cant.</th>
+                            <th>Fecha</th>
+                            {% if es_admin %}
+                            <th>Realizado por</th>
+                            <th class="text-end">Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mov in movimientos %}
+                        <tr>
+                            <td><span class="fw-semibold text-primary">#{{ mov.id }}</span></td>
+                            <td>
+                                {% if mov.tipo == 'entrada' %}
+                                    <span class="badge bg-success">Entrada</span>
+                                {% elif mov.tipo == 'salida' %}
+                                    <span class="badge bg-warning text-dark">Salida</span>
+                                {% elif mov.tipo == 'devolucion' %}
+                                    <span class="badge bg-danger">Devolución</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ mov.tipo }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ clientes.get(mov.id_cliente, '—') }}</td>
+                            <td>{{ insumos.get(mov.id_insumo, '—') }}</td>
+                            <td class="text-end fw-semibold">${{ "%.2f"|format(mov.precio) }}</td>
+                            <td class="text-center">{{ mov.cantidad }}</td>
+                            <td>
+                                {{ mov.fecha_creacion.strftime('%d/%m/%Y') if mov.fecha_creacion else '—' }}
+                                {% if es_admin and mov.fecha_creacion %}
+                                    <br><small class="text-muted">{{ mov.fecha_creacion.strftime('%I:%M %p') }}</small>
+                                {% endif %}
+                            </td>
+                            {% if es_admin %}
+                            <td>
+                                <span class="text-muted small">
+                                    <i class="bi bi-person me-1"></i>
+                                    {{ mov.nombre_usuario or '—' }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('movimientos.editar', id=mov.id) }}"
+                                    class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('movimientos.eliminar', id=mov.id) }}"
+                                    method="post" class="d-inline"
+                                    onsubmit="return confirm('¿Eliminar este movimiento?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="{% if es_admin %}9{% else %}7{% endif %}"
+                                class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                No hay movimientos registrados
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('buscador').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('#tablaMovimientos tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

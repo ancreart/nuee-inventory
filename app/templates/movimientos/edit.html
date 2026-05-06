@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Editar Movimiento{% endblock %}
+{% block page_title %}Editar Movimiento{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0 p-4">
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="txtid_cliente" value="{{ movimiento.id_cliente }}">
+
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <label class="form-label">ID Insumo</label>
+        <input type="number" name="txtid_insumo"
+               value="{{ movimiento.id_insumo }}"
+               class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Precio</label>
+        <input type="number" step="0.01" name="txtprecio"
+               value="{{ movimiento.precio }}"
+               class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Cantidad</label>
+        <input type="number" name="txtcantidad"
+               value="{{ movimiento.cantidad }}"
+               class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Tipo de operación</label>
+        <select name="txttipo" class="form-select">
+          <option value="salida"
+            {{ 'selected' if movimiento.tipo == 'salida' }}>Venta (Salida)</option>
+          <option value="entrada"
+            {{ 'selected' if movimiento.tipo == 'entrada' }}>Compra (Entrada)</option>
+          <option value="devolucion"
+            {{ 'selected' if movimiento.tipo == 'devolucion' }}>Devolución</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Fecha Vencimiento</label>
+        <input type="date" name="txtfecha_vencimiento"
+               value="{{ movimiento.fecha_vencimiento.strftime('%Y-%m-%d') if movimiento.fecha_vencimiento else '' }}"
+               class="form-control">
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Observaciones</label>
+        <textarea name="txtobservaciones"
+                  class="form-control" rows="3">{{ movimiento.observaciones }}</textarea>
+      </div>
+
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary px-4">
+        Actualizar
+      </button>
+      <a href="{{ url_for('movimientos.index') }}" class="btn btn-secondary px-4">
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

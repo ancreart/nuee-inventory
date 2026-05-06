@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Movimientos - Dashboard{% endblock %}
+{% block page_title %}Dashboard de Movimientos{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Total Movimientos</h5>
+            <h2 class="text-danger">120</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Entradas</h5>
+            <h2 class="text-success">80</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Salidas</h5>
+            <h2 class="text-warning">40</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}

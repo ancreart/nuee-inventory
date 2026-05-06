@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Lotes — {{ insumo.descripcion }}{% endblock %}
+{% block page_title %}Lotes de Insumo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <p class="text-muted mb-0">
+        <i class="bi bi-box-seam me-1"></i>
+        <strong>{{ insumo.codigo }}</strong> — {{ insumo.descripcion }}
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('insumos.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+      <a href="{{ url_for('lotes.crear', id_insumo=insumo.id) }}"
+        class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nuevo Lote
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-label">Total Lotes</div>
+        <div class="stat-value">{{ lotes|length }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card success">
+        <div class="stat-label">Unidades Totales</div>
+        <div class="stat-value">{{ total_unidades }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card warning">
+        <div class="stat-label">Por Vencer</div>
+        <div class="stat-value">{{ por_vencer }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card danger">
+        <div class="stat-label">Vencidos</div>
+        <div class="stat-value">{{ vencidos }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>
+        <i class="bi bi-layers me-2"></i>Listado de Lotes
+      </span>
+      <div class="input-group" style="width:280px;">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" id="buscador"
+          placeholder="Buscar lote...">
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="tablaLotes">
+          <thead>
+            <tr>
+              <th>N° Lote</th>
+              <th>Proveedor</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-end">Costo Compra</th>
+              <th>Fecha Entrada</th>
+              <th>Vencimiento</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lote in lotes %}
+            <tr>
+              <td>
+                <code class="px-2 py-1 rounded"
+                  style="background:var(--bg-hover);
+                         color:var(--color-primary);">
+                  {{ lote.numero_lote }}
+                </code>
+              </td>
+              <td>{{ prov_map.get(lote.id_proveedor, '—') }}</td>
+              <td class="text-center">
+                <span class="badge bg-success">{{ lote.cantidad }}</span>
+              </td>
+              <td class="text-end fw-semibold">
+                ${{ "%.2f"|format(lote.costo_compra) }}
+              </td>
+              <td>
+                {{ lote.fecha_entrada.strftime('%d/%m/%Y') if lote.fecha_entrada else '—' }}
+              </td>
+              <td>
+                {% if lote.fecha_vencimiento %}
+                  {% set dias = (lote.fecha_vencimiento - today).days %}
+                  {% if dias < 0 %}
+                    <span class="text-danger fw-semibold">
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      {{ lote.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                    </span>
+                  {% elif dias <= 30 %}
+                    <span class="text-warning fw-semibold">
+                      <i class="bi bi-clock me-1"></i>
+                      {{ lote.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                      <small>({{ dias }}d)</small>
+                    </span>
+                  {% else %}
+                    {{ lote.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <form method="POST"
+                  action="{{ url_for('lotes.eliminar', lote_id=lote.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('¿Eliminar lote {{ lote.numero_lote }}?')">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                <i class="bi bi-layers fs-1 d-block mb-3"></i>
+                No hay lotes registrados para este insumo
+                <br>
+                <a href="{{ url_for('lotes.crear', id_insumo=insumo.id) }}"
+                  class="btn btn-primary mt-3">
+                  <i class="bi bi-plus-lg me-2"></i>Registrar primer lote
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('buscador').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#tablaLotes tbody tr').forEach(tr => {
+      tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Configuración{% endblock %}
+{% block page_title %}Configuración{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">Administra los usuarios del sistema</p>
+    <a href="{{ url_for('auth.admin_crear_usuario') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus"></i> Nuevo Usuario
+    </a>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">
+      <span><i class="bi bi-people me-2"></i>Usuarios registrados</span>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+          <tr>
+            <td>#{{ u.id }}</td>
+            <td><strong>{{ u.username }}</strong></td>
+            <td>{{ u.nombre or '—' }}</td>
+            <td>{{ u.email or '—' }}</td>
+            <td>
+              <span class="badge {{ 'bg-danger' if u.rol == 'admin' else 'bg-secondary' }}">
+                {{ u.rol }}
+              </span>
+            </td>
+            <td>
+              <span class="badge {{ 'bg-success' if u.activo else 'bg-secondary' }}">
+                {{ 'Activo' if u.activo else 'Inactivo' }}
+              </span>
+            </td>
+            <td class="text-end">
+
+              {% if u.id != session['user_id'] %}
+
+              <!-- Cambiar rol -->
+              <form method="POST"
+                    action="{{ url_for('auth.cambiar_rol', id=u.id) }}"
+                    class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="rol"
+                       value="{{ 'usuario' if u.rol == 'admin' else 'admin' }}">
+                <button type="submit" class="btn btn-sm btn-outline-primary"
+                        onclick="return confirm('¿Cambiar rol de este usuario?')">
+                  <i class="bi bi-arrow-repeat"></i>
+                  {{ 'Hacer usuario' if u.rol == 'admin' else 'Hacer admin' }}
+                </button>
+              </form>
+
+              <!-- Activar / Desactivar -->
+              <form method="POST"
+                    action="{{ url_for('auth.toggle_usuario', id=u.id) }}"
+                    class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"
+                        class="btn btn-sm {{ 'btn-outline-warning' if u.activo else 'btn-outline-success' }}"
+                        onclick="return confirm('¿Cambiar estado de este usuario?')">
+                  <i class="bi {{ 'bi-person-slash' if u.activo else 'bi-person-check' }}"></i>
+                  {{ 'Desactivar' if u.activo else 'Activar' }}
+                </button>
+              </form>
+
+              {% else %}
+              <span class="text-muted small">Tu cuenta</span>
+              {% endif %}
+
+              <!-- Resetear contraseña -->
+              <form method="POST"
+                    action="{{ url_for('auth.admin_reset_password', id=u.id) }}"
+                    class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('¿Resetear contraseña de este usuario?')">
+                  <i class="bi bi-key"></i> Resetear
+                </button>
+              </form>
+
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

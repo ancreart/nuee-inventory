@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block title %}Insumos - Farmacia{% endblock %}
+{% block page_title %}Gestión de Insumos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">Administra el inventario de medicamentos e insumos</p>
+    <a href="{{ url_for('insumos.create') }}" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i> Nuevo Insumo
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-label">Total Insumos</div>
+        <div class="stat-value">{{ insumos|length }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card success">
+        <div class="stat-label">Activos</div>
+        <div class="stat-value">{{ insumos|selectattr("activo", "equalto", true)|list|length }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card warning">
+        <div class="stat-label">Por Vencer</div>
+        <div class="stat-value">{{ por_vencer }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card danger">
+        <div class="stat-label">Stock Bajo</div>
+        <div class="stat-value">{{ stock_bajo }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-box-seam-fill me-2"></i>Listado de Insumos</span>
+      <div class="position-relative" style="width:350px;">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" id="buscarInsumo"
+            placeholder="Buscar por código o descripción..."
+            autocomplete="off"
+            oninput="buscarInsumos(this.value)"
+            onfocus="if(this.value.length===0) mostrarTodos()">
+          <button class="btn btn-outline-secondary" type="button"
+            onclick="mostrarTodos()" title="Ver todos">
+            <i class="bi bi-list-ul"></i>
+          </button>
+        </div>
+        <div id="dropdownInsumos" class="dropdown-menu w-100 shadow"
+          style="max-height:300px; overflow-y:auto; display:none; position:absolute; z-index:1050;">
+        </div>
+      </div>
+    </div>
+
+    <div class="px-3 pt-3">
+      <ul class="nav nav-tabs" id="tabsFiltro">
+        <li class="nav-item">
+          <button class="nav-link active" onclick="filtrarTabla('todos', this)">
+            Todos <span class="badge bg-secondary ms-1">{{ insumos|length }}</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="filtrarTabla('activo', this)">
+            Activos <span class="badge bg-success ms-1">{{ insumos|selectattr("activo", "equalto", true)|list|length }}</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="filtrarTabla('inactivo', this)">
+            Inactivos <span class="badge bg-secondary ms-1">{{ insumos|selectattr("activo", "equalto", false)|list|length }}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="tablaInsumos">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Lote</th>
+              <th>INVIMA</th>
+              <th class="text-end">Valor</th>
+              <th class="text-end">IVA</th>
+              <th class="text-center">Stock</th>
+              <th>Vencimiento</th>
+              {% if session.get('rol') == 'admin' %}
+              <th>Registrado por</th>
+              {% endif %}
+              <th class="text-center">Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for insumo in insumos %}
+            <tr data-id="{{ insumo.id }}" data-activo="{{ 'activo' if insumo.activo else 'inactivo' }}">
+              <td><span class="fw-semibold">#{{ insumo.id }}</span></td>
+              <td>
+                <code class="px-2 py-1 rounded"
+                  style="background:var(--bg-hover); color:var(--color-primary);">
+                  {{ insumo.codigo }}
+                </code>
+              </td>
+              <td>{{ insumo.descripcion }}</td>
+              <td>{{ insumo.lote or '-' }}</td>
+              <td>{{ insumo.invima or '-' }}</td>
+              <td class="text-end fw-semibold">${{ "%.2f"|format(insumo.valor) }}</td>
+              <td class="text-end">{{ "%.0f"|format(insumo.iva) }}%</td>
+              <td class="text-center">
+                {% if insumo.cantidad <= insumo.stock_minimo %}
+                  <span class="badge bg-danger">{{ insumo.cantidad }}</span>
+                {% else %}
+                  <span class="badge bg-success">{{ insumo.cantidad }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if insumo.fecha_vencimiento %}
+                  {% if insumo.fecha_vencimiento < today %}
+                    <span class="text-danger fw-semibold">
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      {{ insumo.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                    </span>
+                  {% elif (insumo.fecha_vencimiento - today).days <= 30 %}
+                    <span class="text-warning fw-semibold">
+                      <i class="bi bi-clock me-1"></i>
+                      {{ insumo.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                    </span>
+                  {% else %}
+                    {{ insumo.fecha_vencimiento.strftime('%d/%m/%Y') }}
+                  {% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              {% if session.get('rol') == 'admin' %}
+              <td>
+                {% if insumo.creado_por %}
+                  <span class="badge bg-secondary">
+                    <i class="bi bi-person me-1"></i>{{ insumo.creado_por }}
+                  </span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+              {% endif %}
+              <td class="text-center">
+                {% if insumo.activo %}
+                  <span class="badge bg-success">Activo</span>
+                {% else %}
+                  <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                {% if session.get('rol') == 'admin' %}
+                <a href="{{ url_for('insumos.edit', id=insumo.id) }}"
+                  class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                {% if insumo.activo %}
+                <form method="POST"
+                  action="{{ url_for('insumos.inactivar', id=insumo.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('¿Inactivar este insumo?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm btn-outline-warning me-1"
+                    title="Inactivar">
+                    <i class="bi bi-slash-circle"></i>
+                  </button>
+                </form>
+                {% endif %}
+                <a href="{{ url_for('insumos.delete', id=insumo.id) }}"
+                  class="btn btn-sm btn-outline-danger" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="12" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                No hay insumos registrados
+                <br>
+                <a href="{{ url_for('insumos.create') }}" class="btn btn-primary mt-3">
+                  <i class="bi bi-plus-lg me-2"></i>Crear primer insumo
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="insumos-data" type="application/json">{{ insumos_json | safe }}</script>
+
+<script>
+  const insumosArr = JSON.parse(document.getElementById('insumos-data').textContent);
+  const insumosMap = {};
+  insumosArr.forEach(i => { insumosMap[i.id] = i; });
+
+  let filtroActivo = 'todos';
+
+  function filtrarTabla(estado, btn) {
+    filtroActivo = estado;
+    document.querySelectorAll('#tabsFiltro .nav-link').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('buscarInsumo').value = '';
+    document.getElementById('dropdownInsumos').style.display = 'none';
+    document.querySelectorAll('#tablaInsumos tbody tr[data-activo]').forEach(tr => {
+      tr.style.display = (estado === 'todos' || tr.getAttribute('data-activo') === estado) ? '' : 'none';
+    });
+  }
+
+  function renderDropdown(lista) {
+    const dd = document.getElementById('dropdownInsumos');
+    if (lista.length === 0) {
+      dd.innerHTML = '<div class="dropdown-item text-muted">No se encontraron insumos</div>';
+    } else {
+      dd.innerHTML = lista.map(i => `
+        <a href="#" class="dropdown-item py-2"
+          onclick="seleccionarInsumo(${i.id}); return false;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-primary-subtle text-primary me-2"
+                style="font-family:monospace;">${i.codigo}</span>
+              <strong>${i.descripcion}</strong>
+              <div class="small text-muted">
+                Lote: ${i.lote || '-'} •
+                Stock: ${i.cantidad} •
+                $${i.valor.toFixed(2)}
+              </div>
+            </div>
+            <i class="bi bi-chevron-right text-muted"></i>
+          </div>
+        </a>
+      `).join('');
+    }
+    dd.style.display = 'block';
+  }
+
+  function buscarInsumos(query) {
+    if (query.length < 1) {
+      document.getElementById('dropdownInsumos').style.display = 'none';
+      filtrarTabla(filtroActivo, document.querySelector('#tabsFiltro .nav-link.active'));
+      return;
+    }
+    const filtro = query.toLowerCase();
+    const fuenteFiltrada = filtroActivo === 'todos'
+      ? insumosArr
+      : insumosArr.filter(i => (filtroActivo === 'activo') === i.activo);
+    const result = fuenteFiltrada.filter(i =>
+      i.codigo.toLowerCase().includes(filtro) ||
+      i.descripcion.toLowerCase().includes(filtro) ||
+      i.lote.toLowerCase().includes(filtro)
+    ).slice(0, 10);
+    renderDropdown(result);
+    document.querySelectorAll('#tablaInsumos tbody tr[data-activo]').forEach(tr => {
+      const visible = filtroActivo === 'todos' || tr.getAttribute('data-activo') === filtroActivo;
+      tr.style.display = (visible && tr.textContent.toLowerCase().includes(filtro)) ? '' : 'none';
+    });
+  }
+
+  function mostrarTodos() {
+    renderDropdown(
+      filtroActivo === 'todos' ? insumosArr : insumosArr.filter(i => (filtroActivo === 'activo') === i.activo)
+    );
+    filtrarTabla(filtroActivo, document.querySelector('#tabsFiltro .nav-link.active'));
+  }
+
+  function seleccionarInsumo(id) {
+    document.getElementById('dropdownInsumos').style.display = 'none';
+    document.getElementById('buscarInsumo').value = '';
+    filtrarTabla(filtroActivo, document.querySelector('#tabsFiltro .nav-link.active'));
+    document.querySelectorAll('#tablaInsumos tbody tr').forEach(tr => {
+      tr.classList.remove('table-primary');
+      if (parseInt(tr.getAttribute('data-id')) === id) {
+        tr.classList.add('table-primary');
+        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.position-relative')) {
+      document.getElementById('dropdownInsumos').style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

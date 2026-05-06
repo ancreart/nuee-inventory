@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Contacto - Farmacia{% endblock %}
+{% block page_title %}Registrar Nuevo Contacto{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <form method="POST" action="{{ url_for('clienteproveedor.crear') }}" class="card">
+        <div class="card-body p-4 p-md-5">
+
+          <!-- SECCIÓN 1: TIPO DE CONTACTO -->
+          <div class="mb-5">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">1</span>
+              Tipo de Contacto
+            </h5>
+            <div class="d-flex gap-3">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tipo"
+                  id="tipoCliente" value="C" checked>
+                <label class="form-check-label fw-semibold" for="tipoCliente">
+                  <i class="bi bi-person me-1"></i> Cliente
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tipo"
+                  id="tipoProveedor" value="P">
+                <label class="form-check-label fw-semibold" for="tipoProveedor">
+                  <i class="bi bi-truck me-1"></i> Proveedor
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: IDENTIFICACIÓN -->
+          <div class="mb-5">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">2</span>
+              Identificación
+            </h5>
+            <div class="row g-3">
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Tipo de Identificación</label>
+                <select name="tipo_identificacion" class="form-select">
+                  <option value="NIT">NIT</option>
+                  <option value="CC">Cédula (CC)</option>
+                  <option value="CE">Cédula Extranjería (CE)</option>
+                  <option value="PP">Pasaporte (PP)</option>
+                </select>
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label fw-semibold">
+                  Número <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                  <input type="text" name="nit" class="form-control form-control-lg"
+                    placeholder="Ej: 900123456" required>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: DATOS DEL CONTACTO -->
+          <div class="mb-5">
+            <h5 class="mb-4 d-flex align-items-center">
+              <span class="badge bg-primary me-2">3</span>
+              Datos del Contacto
+            </h5>
+            <div class="row g-3">
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">
+                  Nombre / Razón Social <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person"></i></span>
+                  <input type="text" name="nombre" class="form-control form-control-lg"
+                    placeholder="Ej: Juan Pérez o Droguería Central" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Dirección</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                  <input type="text" name="direccion" class="form-control"
+                    placeholder="Ej: Calle 10 # 5-20">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Celular</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                  <input type="text" name="celular" class="form-control"
+                    placeholder="Ej: 3001234567">
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Correo Electrónico</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                  <input type="email" name="correo" class="form-control"
+                    placeholder="Ej: contacto@empresa.com">
+                </div>
+                <small class="text-muted">Opcional — usado para envío de facturas</small>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="d-flex gap-3 pt-3 border-top">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+              <i class="bi bi-check-circle-fill me-2"></i>Guardar Contacto
+            </button>
+            <a href="{{ url_for('clienteproveedor.index') }}"
+              class="btn btn-outline-secondary btn-lg">
+              <i class="bi bi-x-circle me-2"></i>Cancelar
+            </a>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
