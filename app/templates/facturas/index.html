@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Facturas - Farmacia{% endblock %}
-{% block page_title %}Gestión de Facturas{% endblock %}
+{% block title %}Facturas — Nuée{% endblock %}
+{% block page_title %}Facturas{% endblock %}
 
 {% block content %}
 
@@ -64,8 +64,8 @@
                         <th>Estado</th>
                         {% if session.get('rol') == 'admin' %}
                         <th>Registrado por</th>
-                        <th>Acciones</th>
                         {% endif %}
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,6 +104,7 @@
                             <span class="badge bg-danger">Anulada</span>
                             {% endif %}
                         </td>
+
                         {% if session.get('rol') == 'admin' %}
                         <td>
                             <span class="text-muted small">
@@ -111,17 +112,44 @@
                                 {{ f.nombre_usuario or '—' }}
                             </span>
                         </td>
+                        {% endif %}
+
+                        {# ── Acciones — visibles para todos ── #}
                         <td>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 align-items-center">
+
+                                {# PDF — siempre visible #}
+                                <a href="{{ url_for('facturas.descargar_pdf', id=f.id) }}"
+                                   class="btn btn-sm btn-outline-secondary"
+                                   title="Descargar PDF" target="_blank">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </a>
+
+                                {# Reenviar correo — siempre visible #}
+                                <form method="POST"
+                                      action="{{ url_for('facturas.enviar_correo', id=f.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            title="Reenviar por correo"
+                                            {% if f.id_cliente not in clientes or not clientes[f.id_cliente].correo %}
+                                            disabled title="El cliente no tiene correo registrado"
+                                            {% endif %}>
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                </form>
+
+                                {# Cambiar estado + eliminar — solo admin #}
+                                {% if session.get('rol') == 'admin' %}
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                        data-bs-toggle="dropdown">
+                                            data-bs-toggle="dropdown" title="Cambiar estado">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
                                             <form method="POST"
-                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                  action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Pendiente">
                                                 <button class="dropdown-item" type="submit">
@@ -131,7 +159,7 @@
                                         </li>
                                         <li>
                                             <form method="POST"
-                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                  action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Pagada">
                                                 <button class="dropdown-item" type="submit">
@@ -141,7 +169,7 @@
                                         </li>
                                         <li>
                                             <form method="POST"
-                                                action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
+                                                  action="{{ url_for('facturas.cambiar_estado', id=f.id) }}">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Anulada">
                                                 <button class="dropdown-item" type="submit">
@@ -151,21 +179,25 @@
                                         </li>
                                     </ul>
                                 </div>
+
                                 <form method="POST"
-                                    action="{{ url_for('facturas.eliminar', id=f.id) }}"
-                                    onsubmit="return confirm('¿Eliminar esta factura?')">
+                                      action="{{ url_for('facturas.eliminar', id=f.id) }}"
+                                      onsubmit="return confirm('¿Eliminar la factura {{ f.numero }}?')">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            type="submit" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                                {% endif %}
+
                             </div>
                         </td>
-                        {% endif %}
+
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="{% if session.get('rol') == 'admin' %}10{% else %}8{% endif %}"
+                        <td colspan="{% if session.get('rol') == 'admin' %}11{% else %}9{% endif %}"
                             class="text-center py-5 text-muted">
                             <i class="bi bi-receipt fs-1 d-block mb-2"></i>
                             No hay facturas registradas

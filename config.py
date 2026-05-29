@@ -9,15 +9,12 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    """Configuración base (común a todos los entornos)"""
+    """Configuración base común a todos los entornos."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'woody2026')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_PERMANENT = False
-
-    # Duración de la sesión cuando se marca "Recordar contraseña"
     PERMANENT_SESSION_LIFETIME = timedelta(days=30)
 
-    # Mail
     MAIL_SERVER         = 'smtp.gmail.com'
     MAIL_PORT           = 587
     MAIL_USE_TLS        = True
@@ -27,32 +24,32 @@ class Config:
     MAIL_PASSWORD       = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
 
+    LANGUAGES                = ['es', 'en', 'fr', 'pt']
+    BABEL_DEFAULT_LOCALE     = 'es'
+    BABEL_DEFAULT_TIMEZONE   = 'America/Bogota'
+
 
 class DevelopmentConfig(Config):
-    """Configuración para desarrollo"""
+    """Configuración para desarrollo."""
     DEBUG = True
-
     params = urllib.parse.quote_plus(
         "DRIVER=ODBC Driver 17 for SQL Server;"
         "SERVER=localhost\\SQLEXPRESS;"
-        "DATABASE=Farmacia2026;"
+        "DATABASE=NueeDB;"
         "Trusted_Connection=yes;"
     )
-
     SQLALCHEMY_DATABASE_URI = f"mssql+pyodbc:///?odbc_connect={params}"
 
 
 class ProductionConfig(Config):
-    """Configuración para producción"""
+    """Configuración para producción."""
     DEBUG = False
-
     params = urllib.parse.quote_plus(
         "DRIVER=ODBC Driver 17 for SQL Server;"
         "SERVER=localhost;"
-        "DATABASE=DatosFarmacia;"
+        "DATABASE=NueeProduccion;"
         "Trusted_Connection=yes;"
     )
-
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
         f"mssql+pyodbc:///?odbc_connect={params}"

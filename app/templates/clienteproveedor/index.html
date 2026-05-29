@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-
-{% block title %}Clientes / Proveedores - Farmacia{% endblock %}
+{% block title %}Clientes / Proveedores — Nuée{% endblock %}
 {% block page_title %}Gestión de Clientes y Proveedores{% endblock %}
 
 {% block content %}
@@ -175,7 +174,7 @@
                         {{ form.nombre.label(class="form-label fw-semibold") }}
                         <span class="text-danger">*</span>
                         {{ form.nombre(class="form-control",
-                            placeholder="Ej: Juan Pérez o Droguería Central") }}
+                            placeholder="Ej: Juan Pérez o Laboratorios Natura") }}
                     </div>
 
                     <!-- Dirección y Celular -->
@@ -212,100 +211,117 @@
         </div>
     </div>
 </div>
+<div id="clientes-data"
+     data-clientes="{{ clientes | map(attribute='id') | list | tojson }}"
+     style="display:none;">
+  {% for c in clientes %}
+  <div class="cliente-item"
+       data-id="{{ c.id }}"
+       data-nit="{{ c.nit }}"
+       data-nombre="{{ c.nombre }}"
+       data-direccion="{{ c.direccion or '' }}"
+       data-celular="{{ c.celular or '' }}"
+       data-tipo="{{ c.tipo }}">
+  </div>
+  {% endfor %}
+</div>
 
 <script>
-    const clientesMap = {
-        {% for cliente in clientes %}
-        {{ cliente.id }}: {
-            id: {{ cliente.id }},
-            nit: "{{ cliente.nit }}",
-            nombre: "{{ cliente.nombre | replace('"', '\\"') }}",
-            direccion: "{{ (cliente.direccion or '') | replace('"', '\\"') }}",
-            celular: "{{ cliente.celular or '' }}",
-            tipo: "{{ cliente.tipo }}"
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
+  // Construye el mapa de clientes desde atributos data-* del HTML
+  // para evitar conflictos entre la sintaxis Jinja2 y el parser JS de VS Code
+  const clientesMap = {};
+  document.querySelectorAll('.cliente-item').forEach(el => {
+    const id = parseInt(el.dataset.id);
+    clientesMap[id] = {
+      id:        id,
+      nit:       el.dataset.nit,
+      nombre:    el.dataset.nombre,
+      direccion: el.dataset.direccion,
+      celular:   el.dataset.celular,
+      tipo:      el.dataset.tipo
     };
+  });
 
-    function buscarContactos(query) {
-        const dropdown = document.getElementById('dropdownContactos');
-        if (query.length < 2) {
-            dropdown.style.display = 'none';
-            return;
-        }
-        const filtro = query.toLowerCase();
-        const resultados = Object.values(clientesMap).filter(c =>
-            c.nombre.toLowerCase().includes(filtro) ||
-            c.nit.toLowerCase().includes(filtro)
-        ).slice(0, 10);
-        dropdown.innerHTML = resultados.length === 0 ?
-            '<div class="dropdown-item text-muted">No se encontraron contactos</div>' :
-            resultados.map(c => `
-                <a href="#" class="dropdown-item py-2"
-                    onclick="seleccionarContacto(${c.id}); return false;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>${c.nombre}</strong>
-                            <div class="small text-muted">NIT: ${c.nit} •
-                                ${c.tipo === 'C' ? 'Cliente' : 'Proveedor'}</div>
-                        </div>
-                        <i class="bi bi-chevron-right text-muted"></i>
-                    </div>
-                </a>`).join('');
-        dropdown.style.display = 'block';
+  function buscarContactos(query) {
+    const dropdown = document.getElementById('dropdownContactos');
+    if (query.length < 2) {
+      dropdown.style.display = 'none';
+      return;
     }
+    const filtro     = query.toLowerCase();
+    const resultados = Object.values(clientesMap).filter(c =>
+      c.nombre.toLowerCase().includes(filtro) ||
+      c.nit.toLowerCase().includes(filtro)
+    ).slice(0, 10);
 
-    function mostrarTodosContactos() {
-        const dropdown = document.getElementById('dropdownContactos');
-        dropdown.innerHTML = Object.values(clientesMap).map(c => `
-            <a href="#" class="dropdown-item py-2"
-                onclick="seleccionarContacto(${c.id}); return false;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>${c.nombre}</strong>
-                        <div class="small text-muted">NIT: ${c.nit} •
-                            ${c.tipo === 'C' ? 'Cliente' : 'Proveedor'}</div>
-                    </div>
+    dropdown.innerHTML = resultados.length === 0
+      ? '<div class="dropdown-item text-muted">No se encontraron contactos</div>'
+      : resultados.map(c => `
+          <a href="#" class="dropdown-item py-2"
+             onclick="seleccionarContacto(${c.id}); return false;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${c.nombre}</strong>
+                <div class="small text-muted">
+                  NIT: ${c.nit} · ${c.tipo}
                 </div>
-            </a>`).join('');
-        dropdown.style.display = 'block';
-    }
+              </div>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </div>
+          </a>`).join('');
+    dropdown.style.display = 'block';
+  }
 
-    function seleccionarContacto(id) {
-        document.querySelectorAll('#tablaContactos tbody tr').forEach(row => {
-            row.classList.remove('table-primary');
-            if (parseInt(row.getAttribute('data-id')) === id) {
-                row.classList.add('table-primary');
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-        document.getElementById('dropdownContactos').style.display = 'none';
-        document.getElementById('buscarContacto').value = '';
-    }
+  function mostrarTodosContactos() {
+    const dropdown = document.getElementById('dropdownContactos');
+    dropdown.innerHTML = Object.values(clientesMap).map(c => `
+      <a href="#" class="dropdown-item py-2"
+         onclick="seleccionarContacto(${c.id}); return false;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${c.nombre}</strong>
+            <div class="small text-muted">NIT: ${c.nit} · ${c.tipo}</div>
+          </div>
+        </div>
+      </a>`).join('');
+    dropdown.style.display = 'block';
+  }
 
-    function eliminarContacto(id) {
-        if (confirm('¿Estás seguro de eliminar este contacto?')) {
-            fetch(`/clienteproveedor/eliminar/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': '{{ csrf_token() }}'
-                }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) location.reload();
-                else alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
-            })
-            .catch(() => alert('Error al eliminar el contacto'));
-        }
-    }
-
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.position-relative')) {
-            document.getElementById('dropdownContactos').style.display = 'none';
-        }
+  function seleccionarContacto(id) {
+    document.querySelectorAll('#tablaContactos tbody tr').forEach(row => {
+      row.classList.remove('table-primary');
+      if (parseInt(row.getAttribute('data-id')) === id) {
+        row.classList.add('table-primary');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
+    document.getElementById('dropdownContactos').style.display = 'none';
+    document.getElementById('buscarContacto').value = '';
+  }
+
+  function eliminarContacto(id) {
+    if (confirm('¿Estás seguro de eliminar este contacto?')) {
+      fetch(`/clienteproveedor/eliminar/${id}`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) location.reload();
+        else alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
+      })
+      .catch(() => alert('Error al eliminar el contacto'));
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.position-relative')) {
+      document.getElementById('dropdownContactos').style.display = 'none';
+    }
+  });
 </script>
 
 {% endblock %}

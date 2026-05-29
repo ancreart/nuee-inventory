@@ -1,0 +1,87 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-05-28 08:41-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/templates/base.html:771
+msgid "Skincare Management"
+msgstr ""
+
+#: app/templates/base.html:776
+msgid "Principal"
+msgstr ""
+
+#: app/templates/base.html:783
+msgid "Inventario"
+msgstr ""
+
+#: app/templates/base.html:787
+msgid "Productos"
+msgstr ""
+
+#: app/templates/base.html:792
+msgid "Movimientos"
+msgstr ""
+
+#: app/templates/base.html:795
+msgid "Ventas"
+msgstr ""
+
+#: app/templates/base.html:799
+msgid "Facturas"
+msgstr ""
+
+#: app/templates/base.html:802
+msgid "Contactos"
+msgstr ""
+
+#: app/templates/base.html:806
+msgid "Clientes / Proveedores"
+msgstr ""
+
+#: app/templates/base.html:819
+msgid "Cambiar tema"
+msgstr ""
+
+#: app/templates/base.html:821
+msgid "Modo claro"
+msgstr ""
+
+#: app/templates/base.html:825
+msgid "Modo oscuro"
+msgstr ""
+
+#: app/templates/base.html:841
+msgid "Administrador"
+msgstr ""
+
+#: app/templates/base.html:848
+msgid "Perfil"
+msgstr ""
+
+#: app/templates/base.html:854
+msgid "Configuración"
+msgstr ""
+
+#: app/templates/base.html:861
+msgid "Idioma"
+msgstr ""
+
+#: app/templates/base.html:882
+msgid "Cerrar sesión"
+msgstr ""
+

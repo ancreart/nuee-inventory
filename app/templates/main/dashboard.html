@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Farmacia{% endblock %}
+{% block title %}Dashboard — Nuée{% endblock %}
 {% block page_title %}Panel de Control{% endblock %}
 
 {% block content %}
@@ -12,64 +12,64 @@
 <div class="mb-4">
 
   {% if vencidos %}
-  <div class="alert-banner danger mb-3">
-    <div class="alert-banner-icon">
-      <i class="bi bi-x-octagon-fill"></i>
-    </div>
-    <div class="alert-banner-body">
-      <div class="alert-banner-title">
+  <div class="alert-nuee danger">
+    <div class="an-icon"><i class="bi bi-x-octagon-fill"></i></div>
+    <div class="an-body">
+      <div class="an-title">
         {{ vencidos|length }} producto{{ 's' if vencidos|length > 1 else '' }} vencido{{ 's' if vencidos|length > 1 else '' }}
       </div>
-      <div class="alert-banner-items">
+      <div class="an-pills">
         {% for ins in vencidos %}
-        <span class="alert-tag">{{ ins.descripcion }} — venció {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}</span>
+        <span class="an-pill" title="{{ ins.descripcion }} — venció {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}">
+          {{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}
+        </span>
         {% endfor %}
       </div>
     </div>
-    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
-      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    <a href="{{ url_for('insumos.index') }}" class="an-btn">
+      Revisar <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
 
   {% if por_vencer %}
-  <div class="alert-banner warning mb-3">
-    <div class="alert-banner-icon">
-      <i class="bi bi-exclamation-triangle-fill"></i>
-    </div>
-    <div class="alert-banner-body">
-      <div class="alert-banner-title">
-        {{ por_vencer|length }} producto{{ 's' if por_vencer|length > 1 else '' }} por vencer en los próximos 30 días
+  <div class="alert-nuee warning">
+    <div class="an-icon"><i class="bi bi-hourglass-split"></i></div>
+    <div class="an-body">
+      <div class="an-title">
+        {{ por_vencer|length }} producto{{ 's' if por_vencer|length > 1 else '' }} vence{{ 'n' if por_vencer|length > 1 else '' }} en los próximos 30 días
       </div>
-      <div class="alert-banner-items">
+      <div class="an-pills">
         {% for ins in por_vencer %}
-        <span class="alert-tag">{{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}</span>
+        <span class="an-pill" title="{{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}">
+          {{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}
+        </span>
         {% endfor %}
       </div>
     </div>
-    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
-      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    <a href="{{ url_for('insumos.index') }}" class="an-btn">
+      Revisar <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
 
   {% if stock_bajo %}
-  <div class="alert-banner info mb-3">
-    <div class="alert-banner-icon">
-      <i class="bi bi-box-seam-fill"></i>
-    </div>
-    <div class="alert-banner-body">
-      <div class="alert-banner-title">
+  <div class="alert-nuee stock">
+    <div class="an-icon"><i class="bi bi-box-seam"></i></div>
+    <div class="an-body">
+      <div class="an-title">
         {{ stock_bajo|length }} producto{{ 's' if stock_bajo|length > 1 else '' }} con stock bajo (≤ 5 unidades)
       </div>
-      <div class="alert-banner-items">
+      <div class="an-pills">
         {% for ins in stock_bajo %}
-        <span class="alert-tag">{{ ins.descripcion }} — {{ ins.cantidad }} uds.</span>
+        <span class="an-pill" title="{{ ins.descripcion }} — {{ ins.cantidad }} uds.">
+          {{ ins.descripcion }} — {{ ins.cantidad }} uds.
+        </span>
         {% endfor %}
       </div>
     </div>
-    <a href="{{ url_for('insumos.index') }}" class="alert-banner-btn">
-      Revisar <i class="bi bi-arrow-right ms-1"></i>
+    <a href="{{ url_for('insumos.index') }}" class="an-btn">
+      Revisar <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
@@ -86,14 +86,14 @@
     <div class="stat-card">
       <div class="d-flex justify-content-between align-items-start">
         <div>
-          <div class="stat-label">Total Insumos</div>
+          <div class="stat-label">Total Productos</div>
           <div class="stat-value">{{ total_insumos }}</div>
           <div class="small text-muted mt-2">
             <i class="bi bi-box-seam me-1"></i> Activos en inventario
           </div>
         </div>
-        <div class="p-3 rounded" style="background: rgba(37, 99, 235, 0.1);">
-          <i class="bi bi-box-seam fs-2 text-primary"></i>
+        <div class="p-3 rounded" style="background: rgba(17,17,17,0.06);">
+          <i class="bi bi-box-seam fs-2" style="color: var(--text-secondary);"></i>
         </div>
       </div>
     </div>
@@ -109,8 +109,8 @@
             <i class="bi bi-people me-1"></i> Registrados
           </div>
         </div>
-        <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1);">
-          <i class="bi bi-people fs-2 text-success"></i>
+        <div class="p-3 rounded" style="background: rgba(99,153,34,0.1);">
+          <i class="bi bi-people fs-2" style="color: #639922;"></i>
         </div>
       </div>
     </div>
@@ -126,8 +126,8 @@
             <i class="bi bi-clock me-1"></i> Actualizado ahora
           </div>
         </div>
-        <div class="p-3 rounded" style="background: rgba(245, 158, 11, 0.1);">
-          <i class="bi bi-arrow-left-right fs-2 text-warning"></i>
+        <div class="p-3 rounded" style="background: rgba(186,117,23,0.1);">
+          <i class="bi bi-arrow-left-right fs-2" style="color: #BA7517;"></i>
         </div>
       </div>
     </div>
@@ -136,48 +136,45 @@
 </div>
 
 {# ══════════════════════════════════════════
-   RESUMEN DE ALERTAS (mini cards)
+   RESUMEN ALERTAS ACTIVAS (mini badges)
    ══════════════════════════════════════════ #}
 {% if vencidos or por_vencer or stock_bajo %}
-<div class="row g-3 mb-4">
-  <div class="col-12">
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <span class="text-muted small fw-semibold me-1">
-        <i class="bi bi-bell-fill me-1"></i>ALERTAS ACTIVAS:
-      </span>
-      {% if vencidos %}
-      <span class="badge-alert danger">
-        <i class="bi bi-x-octagon me-1"></i>{{ vencidos|length }} vencido{{ 's' if vencidos|length > 1 else '' }}
-      </span>
-      {% endif %}
-      {% if por_vencer %}
-      <span class="badge-alert warning">
-        <i class="bi bi-clock me-1"></i>{{ por_vencer|length }} por vencer
-      </span>
-      {% endif %}
-      {% if stock_bajo %}
-      <span class="badge-alert info">
-        <i class="bi bi-box me-1"></i>{{ stock_bajo|length }} stock bajo
-      </span>
-      {% endif %}
-    </div>
-  </div>
+<div class="d-flex align-items-center gap-2 flex-wrap mb-4">
+  <span class="text-muted small fw-semibold me-1">
+    <i class="bi bi-bell-fill me-1"></i>ALERTAS ACTIVAS:
+  </span>
+  {% if vencidos %}
+  <span class="badge-alert danger">
+    <i class="bi bi-x-octagon"></i>{{ vencidos|length }} vencido{{ 's' if vencidos|length > 1 else '' }}
+  </span>
+  {% endif %}
+  {% if por_vencer %}
+  <span class="badge-alert warning">
+    <i class="bi bi-hourglass-split"></i>{{ por_vencer|length }} por vencer
+  </span>
+  {% endif %}
+  {% if stock_bajo %}
+  <span class="badge-alert info">
+    <i class="bi bi-box-seam"></i>{{ stock_bajo|length }} stock bajo
+  </span>
+  {% endif %}
 </div>
 {% endif %}
 
 {# ══════════════════════════════════════════
-   GRÁFICA + ÚLTIMOS MOVIMIENTOS
+   GRÁFICA + TOP 5
    ══════════════════════════════════════════ #}
 <div class="row g-4 mb-4">
 
-  {# GRÁFICA DE MOVIMIENTOS ÚLTIMOS 7 DÍAS #}
   <div class="col-lg-7">
     <div class="card h-100">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
           <i class="bi bi-bar-chart-fill me-2"></i>Movimientos — Últimos 7 días
         </h5>
-        <span class="badge bg-primary-subtle text-primary small">Entradas vs Salidas</span>
+        <span class="badge bg-primary-subtle small" style="color: var(--text-secondary);">
+          Entradas vs Salidas
+        </span>
       </div>
       <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
         <canvas id="chartMovimientos" style="max-height: 260px;"></canvas>
@@ -185,12 +182,11 @@
     </div>
   </div>
 
-  {# TOP 5 INSUMOS MÁS VENDIDOS #}
   <div class="col-lg-5">
     <div class="card h-100">
       <div class="card-header">
         <h5 class="mb-0">
-          <i class="bi bi-trophy-fill me-2 text-warning"></i>Top 5 Insumos más vendidos
+        <i class="bi bi-bar-chart-line me-2" style="color: #BA7517;"></i>Top 5 más vendidos
         </h5>
       </div>
       <div class="card-body p-0">
@@ -199,19 +195,17 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Insumo</th>
-                <th class="text-end">Unidades</th>
+                <th>Producto</th>
+                <th class="text-end">Uds.</th>
               </tr>
             </thead>
             <tbody>
               {% for item in top_insumos %}
               <tr>
-                <td>
-                  <span class="fw-bold" style="color: var(--color-primary);">{{ loop.index }}</span>
-                </td>
+                <td><span class="fw-bold" style="color: var(--color-primary);">{{ loop.index }}</span></td>
                 <td class="fw-semibold">{{ item.descripcion }}</td>
                 <td class="text-end">
-                  <span class="badge bg-success-subtle text-success">{{ item.total }}</span>
+                  <span class="badge bg-success-subtle">{{ item.total }}</span>
                 </td>
               </tr>
               {% else %}
@@ -280,25 +274,33 @@
     </div>
   </div>
 </div>
-
 {# ══════════════════════════════════════════
-   CHART.JS — Gráfica de movimientos
+   CHART.JS
    ══════════════════════════════════════════ #}
+
+{# Datos de Jinja2 aislados en atributos data-* para evitar conflictos
+   entre la sintaxis de templates y el analizador de JavaScript de VS Code #}
+<div id="chart-data"
+     data-labels="{{ chart_labels | tojson }}"
+     data-entradas="{{ chart_entradas | tojson }}"
+     data-salidas="{{ chart_salidas | tojson }}"
+     style="display:none;">
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 (function() {
-  // Datos enviados desde Flask
-  const labels   = {{ chart_labels   | tojson }};
-  const entradas = {{ chart_entradas | tojson }};
-  const salidas  = {{ chart_salidas  | tojson }};
+  const chartData = document.getElementById('chart-data');
+  const labels    = JSON.parse(chartData.dataset.labels);
+  const entradas  = JSON.parse(chartData.dataset.entradas);
+  const salidas   = JSON.parse(chartData.dataset.salidas);
 
-  // Detectar tema actual para colores
   const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
 
   function getColors() {
     return {
-      gridColor:  isDark() ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-      textColor:  isDark() ? '#94a3b8' : '#64748b',
+      gridColor: isDark() ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+      textColor: isDark() ? '#94a3b8' : '#64748b',
     };
   }
 
@@ -312,16 +314,16 @@
         {
           label: 'Entradas',
           data: entradas,
-          backgroundColor: 'rgba(16, 185, 129, 0.7)',
-          borderColor:     'rgba(16, 185, 129, 1)',
+          backgroundColor: 'rgba(99, 153, 34, 0.7)',
+          borderColor:     'rgba(99, 153, 34, 1)',
           borderWidth: 1,
           borderRadius: 6,
         },
         {
           label: 'Salidas',
           data: salidas,
-          backgroundColor: 'rgba(37, 99, 235, 0.7)',
-          borderColor:     'rgba(37, 99, 235, 1)',
+          backgroundColor: 'rgba(17, 17, 17, 0.6)',
+          borderColor:     'rgba(17, 17, 17, 0.9)',
           borderWidth: 1,
           borderRadius: 6,
         }
@@ -335,7 +337,7 @@
           position: 'top',
           labels: {
             color: getColors().textColor,
-            font: { family: 'Inter', size: 12 },
+            font: { family: 'DM Sans', size: 12 },
             usePointStyle: true,
             pointStyleWidth: 10,
           }
@@ -353,14 +355,14 @@
       scales: {
         x: {
           grid:  { color: getColors().gridColor },
-          ticks: { color: getColors().textColor, font: { family: 'Inter', size: 11 } }
+          ticks: { color: getColors().textColor, font: { family: 'DM Sans', size: 11 } }
         },
         y: {
           beginAtZero: true,
           grid:  { color: getColors().gridColor },
           ticks: {
             color: getColors().textColor,
-            font: { family: 'Inter', size: 11 },
+            font: { family: 'DM Sans', size: 11 },
             stepSize: 1,
           }
         }
@@ -368,7 +370,6 @@
     }
   });
 
-  // Actualizar colores al cambiar de tema
   const observer = new MutationObserver(() => {
     const c = getColors();
     chart.options.plugins.legend.labels.color          = c.textColor;
@@ -385,122 +386,5 @@
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 </script>
-
-{# ══════════════════════════════════════════
-   ESTILOS DE ALERTAS
-   ══════════════════════════════════════════ #}
-<style>
-  .alert-banner {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 16px 20px;
-    border-radius: var(--radius-lg);
-    border: 1px solid transparent;
-  }
-
-  .alert-banner.danger {
-    background: rgba(239, 68, 68, 0.08);
-    border-color: rgba(239, 68, 68, 0.25);
-  }
-
-  .alert-banner.warning {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.25);
-  }
-
-  .alert-banner.info {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.25);
-  }
-
-  [data-theme="dark"] .alert-banner.danger {
-    background: rgba(248, 113, 113, 0.1);
-    border-color: rgba(248, 113, 113, 0.3);
-  }
-
-  [data-theme="dark"] .alert-banner.warning {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.3);
-  }
-
-  [data-theme="dark"] .alert-banner.info {
-    background: rgba(37, 99, 235, 0.1);
-    border-color: rgba(37, 99, 235, 0.3);
-  }
-
-  .alert-banner-icon {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .alert-banner.danger  .alert-banner-icon { color: #ef4444; }
-  .alert-banner.warning .alert-banner-icon { color: #f59e0b; }
-  .alert-banner.info    .alert-banner-icon { color: #2563eb; }
-
-  .alert-banner-body { flex: 1; }
-
-  .alert-banner-title {
-    font-weight: 600;
-    font-size: 0.9375rem;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-  }
-
-  .alert-banner-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .alert-tag {
-    font-size: 0.8125rem;
-    padding: 3px 10px;
-    border-radius: 50px;
-    background: var(--bg-hover);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-  }
-
-  .alert-banner-btn {
-    flex-shrink: 0;
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-decoration: none;
-    padding: 6px 14px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    background: var(--bg-card);
-    transition: all 0.2s;
-    align-self: center;
-  }
-
-  .alert-banner-btn:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-  }
-
-  .badge-alert {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    padding: 5px 12px;
-    border-radius: 50px;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .badge-alert.danger  { background: rgba(239, 68, 68, 0.1);  color: #ef4444; }
-  .badge-alert.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-  .badge-alert.info    { background: rgba(37, 99, 235, 0.1);  color: #2563eb; }
-
-  [data-theme="dark"] .badge-alert.danger  { background: rgba(248, 113, 113, 0.15); color: #f87171; }
-  [data-theme="dark"] .badge-alert.warning { background: rgba(251, 191, 36, 0.15);  color: #fbbf24; }
-  [data-theme="dark"] .badge-alert.info    { background: rgba(37, 99, 235, 0.15);   color: #60a5fa; }
-
-  .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
-  .text-primary { color: var(--color-primary) !important; }
-</style>
 
 {% endblock %}

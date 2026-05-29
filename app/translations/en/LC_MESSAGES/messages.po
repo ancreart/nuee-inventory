@@ -1,0 +1,66 @@
+# English translations for Nuée.
+# Copyright (C) 2026 Nuée
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Nuee 1.0\n"
+"POT-Creation-Date: 2026-05-22 19:27-0500\n"
+"PO-Revision-Date: 2026-05-22 19:28-0500\n"
+"Language: en\n"
+"Language-Team: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Skincare Management"
+msgstr "Skincare Management"
+
+msgid "Principal"
+msgstr "Main"
+
+msgid "Inventario"
+msgstr "Inventory"
+
+msgid "Productos"
+msgstr "Products"
+
+msgid "Movimientos"
+msgstr "Movements"
+
+msgid "Ventas"
+msgstr "Sales"
+
+msgid "Facturas"
+msgstr "Invoices"
+
+msgid "Contactos"
+msgstr "Contacts"
+
+msgid "Clientes / Proveedores"
+msgstr "Clients / Suppliers"
+
+msgid "Cambiar tema"
+msgstr "Switch theme"
+
+msgid "Modo claro"
+msgstr "Light mode"
+
+msgid "Modo oscuro"
+msgstr "Dark mode"
+
+msgid "Administrador"
+msgstr "Administrator"
+
+msgid "Perfil"
+msgstr "Profile"
+
+msgid "Configuración"
+msgstr "Settings"
+
+msgid "Idioma"
+msgstr "Language"
+
+msgid "Cerrar sesión"
+msgstr "Log out"

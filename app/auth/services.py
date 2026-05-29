@@ -36,7 +36,7 @@ def resetear_password_con_token(token, nueva_password):
 
 def enviar_email_reset(usuario, codigo):
     msg = Message(
-        subject    = 'Código de recuperación — Farmacia',
+        subject    = 'Código de recuperación — Nuée',
         recipients = [usuario.email],
         html       = f"""
         <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;

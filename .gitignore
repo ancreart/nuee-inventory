@@ -1,1 +1,44 @@
- 
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Variables de entorno — NUNCA subir al repositorio
+.env
+.env.*
+
+# Base de datos local
+*.db
+*.sqlite3
+
+# Archivos compilados de traducción (se generan con pybabel compile)
+*.mo
+
+# Archivos temporales de Babel en raíz
+messages.pot
+
+# Distribución / packaging
+dist/
+build/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

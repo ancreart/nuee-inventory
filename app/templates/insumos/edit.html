@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Editar Insumo - Farmacia{% endblock %}
+{% block title %}Editar Producto — Nuée{% endblock %}
 {% block page_title %}Editar Insumo{% endblock %}
 
 {% block content %}
@@ -36,7 +36,7 @@
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
-                  {{ form.lote(class="form-control form-control-lg", placeholder="Ej: L001") }}
+                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Sérum Vitamina C 30ml") }}
                 </div>
                 <small class="text-muted">Número de lote del fabricante</small>
               </div>
@@ -47,7 +47,7 @@
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-capsule"></i></span>
-                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Paracetamol 500mg Tableta") }}
+                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Sérum Vitamina C 30ml") }}
                 </div>
               </div>
 
@@ -64,7 +64,7 @@
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-shield-check me-1"></i>Registro INVIMA
+                  <i class="bi bi-shield-check me-1"></i>Registro Sanitario
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-award"></i></span>

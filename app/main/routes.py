@@ -18,17 +18,22 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
+    # DIAGNÓSTICO TEMPORAL
+    print("=== BABEL DEBUG ===")
+    print("session.lang:", session.get('lang'))
+    from flask_babel import get_locale as babel_get_locale
+    print("babel get_locale():", babel_get_locale())
+    print("===================")
+
     hoy        = date.today()
     en_30_dias = hoy + timedelta(days=30)
 
-    # ── Stats reales ──
     total_insumos   = Insumo.query.filter_by(activo=True).count()
-    total_clientes  = ClienteProveedor.query.filter_by(tipo='C').count()
+    total_clientes  = ClienteProveedor.query.filter_by(tipo='Cliente').count()
     movimientos_hoy = Movimiento.query.filter(
         Movimiento.fecha_creacion >= hoy
     ).count()
 
-    # ── Alertas ──
     stock_bajo = Insumo.query.filter(
         Insumo.activo == True,
         Insumo.cantidad <= 5
@@ -47,20 +52,18 @@ def dashboard():
         Insumo.fecha_vencimiento < hoy
     ).all()
 
-    # ── Últimos movimientos con nombre de insumo ──
     ultimos_movimientos = Movimiento.query.order_by(
         Movimiento.fecha_creacion.desc()
     ).limit(5).all()
 
     insumos_map = {i.id: i.descripcion for i in Insumo.query.all()}
 
-    # ── Datos gráfica: movimientos últimos 7 días ──
     chart_labels   = []
     chart_entradas = []
     chart_salidas  = []
 
     for i in range(6, -1, -1):
-        dia = hoy - timedelta(days=i)
+        dia           = hoy - timedelta(days=i)
         dia_siguiente = dia + timedelta(days=1)
 
         entradas = Movimiento.query.filter(
@@ -79,7 +82,6 @@ def dashboard():
         chart_entradas.append(entradas)
         chart_salidas.append(salidas)
 
-    # ── Top 5 insumos más vendidos (por cantidad total en salidas) ──
     top_query = db.session.query(
         Insumo.descripcion,
         func.sum(Movimiento.cantidad).label('total')
@@ -93,7 +95,8 @@ def dashboard():
         func.sum(Movimiento.cantidad).desc()
     ).limit(5).all()
 
-    top_insumos = [{'descripcion': row.descripcion, 'total': row.total} for row in top_query]
+    top_insumos = [{'descripcion': row.descripcion, 'total': row.total}
+                   for row in top_query]
 
     return render_template("main/dashboard.html",
         total_insumos=total_insumos,

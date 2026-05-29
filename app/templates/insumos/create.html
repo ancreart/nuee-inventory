@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Insumo - Farmacia{% endblock %}
+{% block title %}Nuevo Producto — Nuée{% endblock %}
 {% block page_title %}Registrar Nuevo Insumo{% endblock %}
 
 {% block content %}
@@ -39,7 +39,7 @@
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
-                  {{ form.lote(class="form-control form-control-lg", placeholder="Ej: L001") }}
+                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Sérum Vitamina C 30ml") }}
                 </div>
                 <small class="text-muted">Número de lote del fabricante</small>
                 {% if form.lote.errors %}
@@ -53,7 +53,7 @@
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-capsule"></i></span>
-                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Paracetamol 500mg Tableta") }}
+                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Sérum Vitamina C 30ml") }}
                 </div>
                 {% if form.descripcion.errors %}
                   <div class="text-danger small mt-1">{{ form.descripcion.errors[0] }}</div>
@@ -73,13 +73,13 @@
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-shield-check me-1"></i>Registro INVIMA
+                 <i class="bi bi-shield-check me-1"></i>Registro Sanitario
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-award"></i></span>
                   {{ form.invima(class="form-control", placeholder="Ej: INV12345") }}
                 </div>
-                <small class="text-muted">Opcional - Registro sanitario</small>
+               <small class="text-muted">Opcional — Registro sanitario</small>
               </div>
 
               <div class="col-md-6">
