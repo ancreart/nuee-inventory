@@ -3,7 +3,7 @@ from . import main_bp
 from app.insumos.models import Insumo
 from app.clienteproveedor.models import ClienteProveedor
 from app.movimientos.models import Movimiento
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from sqlalchemy import func
 from app.extensions import db
 
@@ -18,20 +18,18 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
-    # DIAGNÓSTICO TEMPORAL
-    print("=== BABEL DEBUG ===")
-    print("session.lang:", session.get('lang'))
-    from flask_babel import get_locale as babel_get_locale
-    print("babel get_locale():", babel_get_locale())
-    print("===================")
-
     hoy        = date.today()
     en_30_dias = hoy + timedelta(days=30)
 
-    total_insumos   = Insumo.query.filter_by(activo=True).count()
-    total_clientes  = ClienteProveedor.query.filter_by(tipo='Cliente').count()
+    total_insumos  = Insumo.query.filter_by(activo=True).count()
+    total_clientes = ClienteProveedor.query.filter_by(tipo='Cliente').count()
+
+    inicio_hoy = datetime.combine(hoy, datetime.min.time())
+    fin_hoy    = inicio_hoy + timedelta(days=1)
+
     movimientos_hoy = Movimiento.query.filter(
-        Movimiento.fecha_creacion >= hoy
+        Movimiento.fecha_creacion >= inicio_hoy,
+        Movimiento.fecha_creacion <  fin_hoy
     ).count()
 
     stock_bajo = Insumo.query.filter(
@@ -63,22 +61,22 @@ def dashboard():
     chart_salidas  = []
 
     for i in range(6, -1, -1):
-        dia           = hoy - timedelta(days=i)
+        dia           = datetime.combine(hoy - timedelta(days=i), datetime.min.time())
         dia_siguiente = dia + timedelta(days=1)
 
         entradas = Movimiento.query.filter(
             Movimiento.tipo == 'entrada',
             Movimiento.fecha_creacion >= dia,
-            Movimiento.fecha_creacion < dia_siguiente
+            Movimiento.fecha_creacion <  dia_siguiente
         ).count()
 
         salidas = Movimiento.query.filter(
-            Movimiento.tipo == 'salida',
+            Movimiento.tipo.in_(['salida', 'baja']),
             Movimiento.fecha_creacion >= dia,
-            Movimiento.fecha_creacion < dia_siguiente
+            Movimiento.fecha_creacion <  dia_siguiente
         ).count()
 
-        chart_labels.append(dia.strftime('%d/%m'))
+        chart_labels.append((hoy - timedelta(days=6 - i)).strftime('%d/%m'))
         chart_entradas.append(entradas)
         chart_salidas.append(salidas)
 
@@ -88,7 +86,7 @@ def dashboard():
     ).join(
         Movimiento, Movimiento.id_insumo == Insumo.id
     ).filter(
-        Movimiento.tipo == 'salida'
+        Movimiento.tipo.in_(['salida', 'baja'])
     ).group_by(
         Insumo.id, Insumo.descripcion
     ).order_by(

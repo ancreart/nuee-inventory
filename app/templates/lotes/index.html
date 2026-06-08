@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Lotes — {{ insumo.descripcion }}{% endblock %}
-{% block page_title %}Lotes de Insumo{% endblock %}
+{% block title %}{{ _('Lotes') }} — {{ insumo.descripcion }}{% endblock %}
+{% block page_title %}{{ _('Lotes de Insumo') }}{% endblock %}
 
 {% block content %}
+
+{% set msg_eliminar_lote = _('¿Eliminar lote') %}
+
 <div class="container-fluid">
 
-  <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <p class="text-muted mb-0">
@@ -15,53 +17,48 @@
     </div>
     <div class="d-flex gap-2">
       <a href="{{ url_for('insumos.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
+        <i class="bi bi-arrow-left"></i> {{ _('Volver') }}
       </a>
-      <a href="{{ url_for('lotes.crear', id_insumo=insumo.id) }}"
-        class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Nuevo Lote
+      <a href="{{ url_for('lotes.crear', id_insumo=insumo.id) }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> {{ _('Nuevo Lote') }}
       </a>
     </div>
   </div>
 
-  <!-- Stats -->
   <div class="row g-4 mb-4">
     <div class="col-md-3">
       <div class="stat-card">
-        <div class="stat-label">Total Lotes</div>
+        <div class="stat-label">{{ _('Total Lotes') }}</div>
         <div class="stat-value">{{ lotes|length }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card success">
-        <div class="stat-label">Unidades Totales</div>
+        <div class="stat-label">{{ _('Unidades Totales') }}</div>
         <div class="stat-value">{{ total_unidades }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card warning">
-        <div class="stat-label">Por Vencer</div>
+        <div class="stat-label">{{ _('Por Vencer') }}</div>
         <div class="stat-value">{{ por_vencer }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card danger">
-        <div class="stat-label">Vencidos</div>
+        <div class="stat-label">{{ _('Vencidos') }}</div>
         <div class="stat-value">{{ vencidos }}</div>
       </div>
     </div>
   </div>
 
-  <!-- Tabla -->
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <span>
-        <i class="bi bi-layers me-2"></i>Listado de Lotes
-      </span>
+      <span><i class="bi bi-layers me-2"></i>{{ _('Listado de Lotes') }}</span>
       <div class="input-group" style="width:280px;">
         <span class="input-group-text"><i class="bi bi-search"></i></span>
         <input type="text" class="form-control" id="buscador"
-          placeholder="Buscar lote...">
+          placeholder="{{ _('Buscar lote...') }}">
       </div>
     </div>
     <div class="card-body p-0">
@@ -69,13 +66,13 @@
         <table class="table table-hover mb-0" id="tablaLotes">
           <thead>
             <tr>
-              <th>N° Lote</th>
-              <th>Proveedor</th>
-              <th class="text-center">Cantidad</th>
-              <th class="text-end">Costo Compra</th>
-              <th>Fecha Entrada</th>
-              <th>Vencimiento</th>
-              <th class="text-end">Acciones</th>
+              <th>{{ _('N° Lote') }}</th>
+              <th>{{ _('Proveedor') }}</th>
+              <th class="text-center">{{ _('Cantidad') }}</th>
+              <th class="text-end">{{ _('Costo Compra') }}</th>
+              <th>{{ _('Fecha Entrada') }}</th>
+              <th>{{ _('Vencimiento') }}</th>
+              <th class="text-end">{{ _('Acciones') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -83,8 +80,7 @@
             <tr>
               <td>
                 <code class="px-2 py-1 rounded"
-                  style="background:var(--bg-hover);
-                         color:var(--color-primary);">
+                  style="background:var(--bg-hover); color:var(--color-primary);">
                   {{ lote.numero_lote }}
                 </code>
               </td>
@@ -123,7 +119,7 @@
                 <form method="POST"
                   action="{{ url_for('lotes.eliminar', lote_id=lote.id) }}"
                   class="d-inline"
-                  onsubmit="return confirm('¿Eliminar lote {{ lote.numero_lote }}?')">
+                  onsubmit="return confirm('{{ msg_eliminar_lote }} {{ lote.numero_lote }}?')">
                   <button type="submit" class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-trash"></i>
                   </button>
@@ -134,11 +130,11 @@
             <tr>
               <td colspan="7" class="text-center py-5 text-muted">
                 <i class="bi bi-layers fs-1 d-block mb-3"></i>
-                No hay lotes registrados para este insumo
+                {{ _('No hay lotes registrados para este insumo') }}
                 <br>
                 <a href="{{ url_for('lotes.crear', id_insumo=insumo.id) }}"
                   class="btn btn-primary mt-3">
-                  <i class="bi bi-plus-lg me-2"></i>Registrar primer lote
+                  <i class="bi bi-plus-lg me-2"></i>{{ _('Registrar primer lote') }}
                 </a>
               </td>
             </tr>

@@ -1,52 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Facturas — Nuée{% endblock %}
-{% block page_title %}Facturas{% endblock %}
+{% block title %}{{ _('Facturas') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Facturas') }}{% endblock %}
 
 {% block content %}
 
+{% set msg_eliminar_factura = _('¿Eliminar la factura') %}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <p class="text-muted mb-0">Administra las facturas de venta</p>
+    <p class="text-muted mb-0">{{ _('Administra las facturas de venta') }}</p>
     <a href="{{ url_for('facturas.nueva') }}" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Nueva Factura
+        <i class="bi bi-plus-lg"></i> {{ _('Nueva Factura') }}
     </a>
 </div>
 
-<!-- Stats -->
 <div class="row g-4 mb-4">
     <div class="col-6 col-md-3">
         <div class="stat-card">
-            <div class="stat-label">Total Facturas</div>
+            <div class="stat-label">{{ _('Total Facturas') }}</div>
             <div class="stat-value">{{ total_facturas }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card warning">
-            <div class="stat-label">Pendientes</div>
+            <div class="stat-label">{{ _('Pendientes') }}</div>
             <div class="stat-value">{{ total_pendientes }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card success">
-            <div class="stat-label">Pagadas</div>
+            <div class="stat-label">{{ _('Pagadas') }}</div>
             <div class="stat-value">{{ total_pagadas }}</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card danger">
-            <div class="stat-label">Anuladas</div>
+            <div class="stat-label">{{ _('Anuladas') }}</div>
             <div class="stat-value">{{ total_anuladas }}</div>
         </div>
     </div>
 </div>
 
-<!-- Tabla -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Listado de Facturas</h5>
+        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>{{ _('Listado de Facturas') }}</h5>
         <div class="input-group" style="width:300px;">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
             <input type="text" class="form-control" id="buscador"
-              placeholder="Buscar por N°, cliente, estado...">
+              placeholder="{{ _('Buscar por N°, cliente, estado...') }}">
         </div>
     </div>
     <div class="card-body p-0">
@@ -54,18 +54,18 @@
             <table class="table table-hover mb-0" id="tablaFacturas">
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>N° Factura</th>
-                        <th>Cliente</th>
-                        <th>Fecha</th>
-                        <th>Subtotal</th>
-                        <th>IVA</th>
-                        <th>Total</th>
-                        <th>Estado</th>
+                        <th>{{ _('Código') }}</th>
+                        <th>{{ _('N° Factura') }}</th>
+                        <th>{{ _('Cliente') }}</th>
+                        <th>{{ _('Fecha') }}</th>
+                        <th>{{ _('Subtotal') }}</th>
+                        <th>{{ _('IVA') }}</th>
+                        <th>{{ _('Total') }}</th>
+                        <th>{{ _('Estado') }}</th>
                         {% if session.get('rol') == 'admin' %}
-                        <th>Registrado por</th>
+                        <th>{{ _('Registrado por') }}</th>
                         {% endif %}
-                        <th>Acciones</th>
+                        <th>{{ _('Acciones') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,11 +97,11 @@
                         <td class="fw-semibold">${{ "%.2f"|format(f.total) }}</td>
                         <td>
                             {% if f.estado == 'Pagada' %}
-                            <span class="badge bg-success">Pagada</span>
+                            <span class="badge bg-success">{{ _('Pagada') }}</span>
                             {% elif f.estado == 'Pendiente' %}
-                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            <span class="badge bg-warning text-dark">{{ _('Pendiente') }}</span>
                             {% else %}
-                            <span class="badge bg-danger">Anulada</span>
+                            <span class="badge bg-danger">{{ _('Anulada') }}</span>
                             {% endif %}
                         </td>
 
@@ -114,36 +114,32 @@
                         </td>
                         {% endif %}
 
-                        {# ── Acciones — visibles para todos ── #}
                         <td>
                             <div class="d-flex gap-2 align-items-center">
 
-                                {# PDF — siempre visible #}
                                 <a href="{{ url_for('facturas.descargar_pdf', id=f.id) }}"
                                    class="btn btn-sm btn-outline-secondary"
-                                   title="Descargar PDF" target="_blank">
+                                   title="{{ _('Descargar PDF') }}" target="_blank">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </a>
 
-                                {# Reenviar correo — siempre visible #}
                                 <form method="POST"
                                       action="{{ url_for('facturas.enviar_correo', id=f.id) }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-secondary"
-                                            title="Reenviar por correo"
+                                            title="{{ _('Reenviar por correo') }}"
                                             {% if f.id_cliente not in clientes or not clientes[f.id_cliente].correo %}
-                                            disabled title="El cliente no tiene correo registrado"
+                                            disabled title="{{ _('El cliente no tiene correo registrado') }}"
                                             {% endif %}>
                                         <i class="bi bi-envelope"></i>
                                     </button>
                                 </form>
 
-                                {# Cambiar estado + eliminar — solo admin #}
                                 {% if session.get('rol') == 'admin' %}
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                            data-bs-toggle="dropdown" title="Cambiar estado">
+                                            data-bs-toggle="dropdown" title="{{ _('Cambiar estado') }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
@@ -153,7 +149,7 @@
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Pendiente">
                                                 <button class="dropdown-item" type="submit">
-                                                    <i class="bi bi-clock me-2 text-warning"></i>Pendiente
+                                                    <i class="bi bi-clock me-2 text-warning"></i>{{ _('Pendiente') }}
                                                 </button>
                                             </form>
                                         </li>
@@ -163,7 +159,7 @@
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Pagada">
                                                 <button class="dropdown-item" type="submit">
-                                                    <i class="bi bi-check-circle me-2 text-success"></i>Pagada
+                                                    <i class="bi bi-check-circle me-2 text-success"></i>{{ _('Pagada') }}
                                                 </button>
                                             </form>
                                         </li>
@@ -173,7 +169,7 @@
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <input type="hidden" name="estado" value="Anulada">
                                                 <button class="dropdown-item" type="submit">
-                                                    <i class="bi bi-x-circle me-2 text-danger"></i>Anulada
+                                                    <i class="bi bi-x-circle me-2 text-danger"></i>{{ _('Anulada') }}
                                                 </button>
                                             </form>
                                         </li>
@@ -182,10 +178,10 @@
 
                                 <form method="POST"
                                       action="{{ url_for('facturas.eliminar', id=f.id) }}"
-                                      onsubmit="return confirm('¿Eliminar la factura {{ f.numero }}?')">
+                                      onsubmit="return confirm('{{ msg_eliminar_factura }} {{ f.numero }}?')">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button class="btn btn-sm btn-outline-danger"
-                                            type="submit" title="Eliminar">
+                                            type="submit" title="{{ _('Eliminar') }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -200,7 +196,7 @@
                         <td colspan="{% if session.get('rol') == 'admin' %}11{% else %}9{% endif %}"
                             class="text-center py-5 text-muted">
                             <i class="bi bi-receipt fs-1 d-block mb-2"></i>
-                            No hay facturas registradas
+                            {{ _('No hay facturas registradas') }}
                         </td>
                     </tr>
                     {% endfor %}

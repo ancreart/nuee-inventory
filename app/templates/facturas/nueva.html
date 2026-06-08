@@ -1,29 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Nueva Factura — Nuée{% endblock %}
-{% block page_title %}Nueva Factura{% endblock %}
+{% block title %}{{ _('Nueva Factura') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Nueva Factura') }}{% endblock %}
 
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <p class="text-muted mb-0">Registra una nueva factura de venta</p>
+  <p class="text-muted mb-0">{{ _('Registra una nueva factura de venta') }}</p>
   <a href="{{ url_for('facturas.index') }}" class="btn btn-outline-secondary">
-    <i class="bi bi-arrow-left"></i> Volver
+    <i class="bi bi-arrow-left"></i> {{ _('Volver') }}
   </a>
 </div>
 
 <form method="POST" action="{{ url_for('facturas.nueva') }}" id="formFactura">
   {{ form.hidden_tag() }}
 
-  {# ── SECCIÓN 1: DATOS DEL CLIENTE ── #}
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
         <span class="badge bg-secondary me-2" style="font-size:0.7rem;">1</span>
-        Datos de Facturación
+        {{ _('Datos de Facturación') }}
       </h5>
       <button type="button" class="btn btn-sm btn-outline-primary"
-              onclick="abrirModalCliente()" title="Crear nuevo cliente">
-        <i class="bi bi-person-plus"></i> Nuevo cliente
+              onclick="abrirModalCliente()" title="{{ _('Crear nuevo cliente') }}">
+        <i class="bi bi-person-plus"></i> {{ _('Nuevo cliente') }}
       </button>
     </div>
     <div class="card-body">
@@ -31,20 +30,20 @@
       <div class="row g-3 mb-3">
         <div class="col-md-8">
           <label class="form-label fw-semibold">
-            Razón Social / Nombre <span class="text-danger">*</span>
+            {{ _('Razón Social / Nombre') }} <span class="text-danger">*</span>
           </label>
           <input type="hidden" name="id_cliente" id="id_cliente_hidden">
           <div class="position-relative">
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-search"></i></span>
               <input type="text" id="buscarCliente" class="form-control"
-                     placeholder="Escribe nombre o NIT..."
+                     placeholder="{{ _('Escribe nombre o NIT...') }}"
                      autocomplete="off"
                      oninput="buscarClientes(this.value)"
                      onfocus="if(this.value.length===0) mostrarTodosClientes()"
                      required>
               <button class="btn btn-outline-secondary" type="button"
-                      onclick="mostrarTodosClientes()" title="Ver todos">
+                      onclick="mostrarTodosClientes()" title="{{ _('Ver todos') }}">
                 <i class="bi bi-list-ul"></i>
               </button>
             </div>
@@ -57,7 +56,7 @@
               <i class="bi bi-check-circle-fill text-success"></i>
               <span id="nombreClienteSeleccionado"></span>
               <a href="#" class="text-danger ms-1" onclick="limpiarCliente(); return false;"
-                 style="text-decoration:none;" title="Cambiar">
+                 style="text-decoration:none;" title="{{ _('Cambiar') }}">
                 <i class="bi bi-x-circle"></i>
               </a>
             </span>
@@ -65,45 +64,45 @@
         </div>
 
         <div class="col-md-4">
-          <label class="form-label fw-semibold">Tipo de Identificación</label>
+          <label class="form-label fw-semibold">{{ _('Tipo de Identificación') }}</label>
           <select id="tipoId" class="form-select" disabled>
             <option value="NIT">NIT</option>
-            <option value="CC">CC — Cédula de Ciudadanía</option>
-            <option value="CE">CE — Cédula de Extranjería</option>
+            <option value="CC">CC — {{ _('Cédula de Ciudadanía') }}</option>
+            <option value="CE">CE — {{ _('Cédula de Extranjería') }}</option>
           </select>
         </div>
       </div>
 
       <div class="row g-3 mb-3">
         <div class="col-md-4">
-          <label class="form-label fw-semibold">Número de Identificación</label>
+          <label class="form-label fw-semibold">{{ _('Número de Identificación') }}</label>
           <div class="input-group">
             <input type="text" id="numeroId" class="form-control"
-                   placeholder="Se autocompleta" readonly>
+                   placeholder="{{ _('Se autocompleta') }}" readonly>
             <span class="input-group-text" id="digitoVerificacion"
                   style="display:none; font-weight:600;"></span>
           </div>
         </div>
         <div class="col-md-8">
-          <label class="form-label fw-semibold">Dirección</label>
+          <label class="form-label fw-semibold">{{ _('Dirección') }}</label>
           <input type="text" id="direccionCliente" class="form-control"
-                 placeholder="Se autocompleta al seleccionar cliente" readonly>
+                 placeholder="{{ _('Se autocompleta al seleccionar cliente') }}" readonly>
         </div>
       </div>
 
       <div class="row g-3">
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Correo Electrónico</label>
+          <label class="form-label fw-semibold">{{ _('Correo Electrónico') }}</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
             <input type="text" id="correoCliente" class="form-control"
-                   placeholder="Se autocompleta al seleccionar cliente" readonly>
+                   placeholder="{{ _('Se autocompleta al seleccionar cliente') }}" readonly>
           </div>
         </div>
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Observaciones</label>
+          <label class="form-label fw-semibold">{{ _('Observaciones') }}</label>
           <input type="text" name="observaciones" class="form-control"
-                 placeholder="Notas adicionales...">
+                 placeholder="{{ _('Notas adicionales...') }}">
         </div>
       </div>
 
@@ -114,10 +113,10 @@
           </div>
           <div class="an-body">
             <span style="font-size:0.85rem;">
-              Este cliente no tiene correo — la factura no se enviará automáticamente.
+              {{ _('Este cliente no tiene correo — la factura no se enviará automáticamente.') }}
               <a href="{{ url_for('clienteproveedor.index') }}" target="_blank"
                  style="color:var(--text-primary); font-weight:600;">
-                Agrégalo aquí
+                {{ _('Agrégalo aquí') }}
               </a>
             </span>
           </div>
@@ -127,16 +126,15 @@
     </div>
   </div>
 
-  {# ── SECCIÓN 2: PRODUCTOS ── #}
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
         <span class="badge bg-secondary me-2" style="font-size:0.7rem;">2</span>
-        Productos
+        {{ _('Productos') }}
       </h5>
       <button type="button" class="btn btn-sm btn-outline-primary"
               onclick="agregarFila()">
-        <i class="bi bi-plus-lg"></i> Agregar producto
+        <i class="bi bi-plus-lg"></i> {{ _('Agregar producto') }}
       </button>
     </div>
     <div class="card-body p-0">
@@ -144,11 +142,11 @@
         <table class="table mb-0" id="tablaItems">
           <thead>
             <tr>
-              <th class="ps-4">Producto</th>
-              <th style="width:110px">Cantidad</th>
-              <th style="width:140px">Precio Unit.</th>
-              <th style="width:100px">IVA %</th>
-              <th style="width:130px">Subtotal</th>
+              <th class="ps-4">{{ _('Producto') }}</th>
+              <th style="width:110px">{{ _('Cantidad') }}</th>
+              <th style="width:140px">{{ _('Precio Unit.') }}</th>
+              <th style="width:100px">{{ _('IVA %%') }}</th>
+              <th style="width:130px">{{ _('Subtotal') }}</th>
               <th style="width:50px"></th>
             </tr>
           </thead>
@@ -158,31 +156,30 @@
     </div>
   </div>
 
-  {# ── BOTONES + RESUMEN ── #}
   <div class="row g-4 align-items-end">
     <div class="col-md-6 d-flex gap-3">
       <a href="{{ url_for('facturas.index') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-x-lg"></i> Cancelar
+        <i class="bi bi-x-lg"></i> {{ _('Cancelar') }}
       </a>
       <button type="submit" class="btn btn-primary" id="btnGuardar"
               onclick="return validarFormulario()">
-        <i class="bi bi-receipt"></i> Guardar Factura
+        <i class="bi bi-receipt"></i> {{ _('Guardar Factura') }}
       </button>
     </div>
     <div class="col-md-6">
       <div class="card">
         <div class="card-body py-3">
           <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Subtotal:</span>
+            <span class="text-muted">{{ _('Subtotal:') }}</span>
             <span id="resSubtotal" class="fw-semibold">$0</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">IVA:</span>
+            <span class="text-muted">{{ _('IVA:') }}</span>
             <span id="resIva" class="fw-semibold">$0</span>
           </div>
           <hr style="border-color:var(--border-color); margin:8px 0;">
           <div class="d-flex justify-content-between">
-            <span class="fw-bold fs-5">Total:</span>
+            <span class="fw-bold fs-5">{{ _('Total:') }}</span>
             <span id="resTotal" class="fw-bold fs-5"
                   style="color:var(--color-primary);">$0</span>
           </div>
@@ -193,10 +190,6 @@
 
 </form>
 
-
-{# ══════════════════════════════════════════
-   MODAL — Crear cliente nuevo
-   ══════════════════════════════════════════ #}
 <div class="modal fade" id="modalNuevoCliente" tabindex="-1"
      aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -204,7 +197,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title" id="modalNuevoClienteLabel">
-          <i class="bi bi-person-plus me-2"></i>Crear nuevo cliente
+          <i class="bi bi-person-plus me-2"></i>{{ _('Crear nuevo cliente') }}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
@@ -223,28 +216,28 @@
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label fw-semibold">
-              Tipo de Identificación <span class="text-danger">*</span>
+              {{ _('Tipo de Identificación') }} <span class="text-danger">*</span>
             </label>
             <select id="modal_tipo_id" class="form-select">
               <option value="NIT">NIT</option>
-              <option value="CC">CC — Cédula de Ciudadanía</option>
-              <option value="CE">CE — Cédula de Extranjería</option>
+              <option value="CC">CC — {{ _('Cédula de Ciudadanía') }}</option>
+              <option value="CE">CE — {{ _('Cédula de Extranjería') }}</option>
             </select>
           </div>
           <div class="col-md-4">
             <label class="form-label fw-semibold">
-              Número de Identificación <span class="text-danger">*</span>
+              {{ _('Número de Identificación') }} <span class="text-danger">*</span>
             </label>
             <input type="text" id="modal_nit" class="form-control"
                    placeholder="Ej: 900123456-1">
           </div>
           <div class="col-md-4">
             <label class="form-label fw-semibold">
-              Tipo <span class="text-danger">*</span>
+              {{ _('Tipo') }} <span class="text-danger">*</span>
             </label>
             <select id="modal_tipo" class="form-select">
-              <option value="C">Cliente</option>
-              <option value="P">Proveedor</option>
+              <option value="C">{{ _('Cliente') }}</option>
+              <option value="P">{{ _('Proveedor') }}</option>
             </select>
           </div>
         </div>
@@ -252,14 +245,14 @@
         <div class="row g-3 mt-1">
           <div class="col-md-8">
             <label class="form-label fw-semibold">
-              Nombre / Razón Social <span class="text-danger">*</span>
+              {{ _('Nombre / Razón Social') }} <span class="text-danger">*</span>
             </label>
             <input type="text" id="modal_nombre" class="form-control"
-                   placeholder="Nombre completo o razón social">
+                   placeholder="{{ _('Nombre completo o razón social') }}">
           </div>
           <div class="col-md-4">
             <label class="form-label fw-semibold">
-              Celular <span class="text-danger">*</span>
+              {{ _('Celular') }} <span class="text-danger">*</span>
             </label>
             <input type="text" id="modal_celular" class="form-control"
                    placeholder="Ej: 3001234567">
@@ -269,16 +262,16 @@
         <div class="row g-3 mt-1">
           <div class="col-md-8">
             <label class="form-label fw-semibold">
-              Dirección <span class="text-danger">*</span>
+              {{ _('Dirección') }} <span class="text-danger">*</span>
             </label>
             <input type="text" id="modal_direccion" class="form-control"
-                   placeholder="Dirección de correspondencia">
+                   placeholder="{{ _('Dirección de correspondencia') }}">
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">Correo Electrónico</label>
+            <label class="form-label fw-semibold">{{ _('Correo Electrónico') }}</label>
             <input type="email" id="modal_correo" class="form-control"
                    placeholder="correo@ejemplo.com">
-            <div class="form-text">Se usará para enviar la factura.</div>
+            <div class="form-text">{{ _('Se usará para enviar la factura.') }}</div>
           </div>
         </div>
 
@@ -286,10 +279,10 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary"
-                data-bs-dismiss="modal">Cancelar</button>
+                data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
         <button type="button" class="btn btn-primary" id="btnGuardarCliente"
                 onclick="guardarClienteModal()">
-          <i class="bi bi-check-lg me-1"></i> Crear cliente
+          <i class="bi bi-check-lg me-1"></i> {{ _('Crear cliente') }}
         </button>
       </div>
 
@@ -297,15 +290,10 @@
   </div>
 </div>
 
-
-{# ── Datos JSON desde Flask ── #}
 <script id="clientes-data" type="application/json">{{ clientes_json | safe }}</script>
 <script id="insumos-data"  type="application/json">{{ insumos_json  | safe }}</script>
 
 <script>
-// ══════════════════════════════════════════
-//  DATOS
-// ══════════════════════════════════════════
 let clientesArr = JSON.parse(document.getElementById('clientes-data').textContent);
 let clientesMap = {};
 clientesArr.forEach(c => { clientesMap[c.id] = c; });
@@ -314,30 +302,22 @@ const insumosArr = JSON.parse(document.getElementById('insumos-data').textConten
 const insumos = {};
 insumosArr.forEach(item => { insumos[item.id] = item; });
 
-
-// ══════════════════════════════════════════
-//  FORMATO
-// ══════════════════════════════════════════
 function formatCOP(valor) {
   return '$' + Math.round(valor).toLocaleString('es-CO');
 }
 
-
-// ══════════════════════════════════════════
-//  BÚSQUEDA DE CLIENTES
-// ══════════════════════════════════════════
 function renderDropdown(lista) {
   const dd = document.getElementById('dropdownClientes');
   if (lista.length === 0) {
     dd.innerHTML = `
       <div class="dropdown-item text-muted py-3 text-center">
-        <i class="bi bi-search me-2"></i>No se encontraron clientes
+        <i class="bi bi-search me-2"></i>{{ _('No se encontraron clientes') }}
       </div>
       <div class="dropdown-divider"></div>
       <a href="#" class="dropdown-item py-2 fw-semibold"
          onclick="abrirModalCliente(); return false;">
         <i class="bi bi-person-plus me-2" style="color:var(--color-primary);"></i>
-        Crear nuevo cliente
+        {{ _('Crear nuevo cliente') }}
       </a>`;
   } else {
     dd.innerHTML = lista.map(c => `
@@ -351,7 +331,7 @@ function renderDropdown(lista) {
               &nbsp;·&nbsp;
               <span class="badge ${c.tipo === 'C' ? 'bg-success' : 'bg-warning text-dark'}"
                     style="font-size:0.65rem;">
-                ${c.tipo === 'C' ? 'Cliente' : 'Proveedor'}
+                ${c.tipo === 'C' ? '{{ _("Cliente") }}' : '{{ _("Proveedor") }}'}
               </span>
             </div>
           </div>
@@ -361,7 +341,7 @@ function renderDropdown(lista) {
       `<div class="dropdown-divider"></div>
        <a href="#" class="dropdown-item py-2 text-muted small"
           onclick="abrirModalCliente(); return false;">
-         <i class="bi bi-person-plus me-2"></i>Crear nuevo cliente
+         <i class="bi bi-person-plus me-2"></i>{{ _('Crear nuevo cliente') }}
        </a>`;
   }
   dd.style.display = 'block';
@@ -387,19 +367,14 @@ function mostrarTodosClientes() {
 function seleccionarCliente(id) {
   const c = clientesMap[id];
   if (!c) return;
-
   document.getElementById('id_cliente_hidden').value         = c.id;
   document.getElementById('buscarCliente').style.display     = 'none';
   document.getElementById('buscarCliente').removeAttribute('required');
   document.getElementById('dropdownClientes').style.display  = 'none';
-  document.getElementById('nombreClienteSeleccionado').textContent =
-    c.nombre + ' — ' + c.nit;
+  document.getElementById('nombreClienteSeleccionado').textContent = c.nombre + ' — ' + c.nit;
   document.getElementById('clienteSeleccionado').style.display = '';
-
   document.getElementById('tipoId').value = c.tipo_identificacion || 'NIT';
-
-  if ((c.tipo_identificacion === 'NIT' || !c.tipo_identificacion) &&
-      c.nit.includes('-')) {
+  if ((c.tipo_identificacion === 'NIT' || !c.tipo_identificacion) && c.nit.includes('-')) {
     const partes = c.nit.split('-');
     document.getElementById('numeroId').value               = partes[0];
     document.getElementById('digitoVerificacion').textContent = '-' + partes[1];
@@ -408,9 +383,7 @@ function seleccionarCliente(id) {
     document.getElementById('numeroId').value = c.nit;
     document.getElementById('digitoVerificacion').style.display = 'none';
   }
-
   document.getElementById('direccionCliente').value = c.direccion || '';
-
   if (c.correo) {
     document.getElementById('correoCliente').value        = c.correo;
     document.getElementById('alertaCorreo').style.display = 'none';
@@ -441,20 +414,14 @@ document.addEventListener('click', function(e) {
   }
 });
 
-
-// ══════════════════════════════════════════
-//  MODAL NUEVO CLIENTE
-// ══════════════════════════════════════════
 function abrirModalCliente() {
   document.getElementById('dropdownClientes').style.display = 'none';
   document.getElementById('modalError').style.display       = 'none';
-  ['modal_nit','modal_nombre','modal_celular',
-   'modal_direccion','modal_correo'].forEach(id => {
+  ['modal_nit','modal_nombre','modal_celular','modal_direccion','modal_correo'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('modal_tipo_id').value = 'NIT';
   document.getElementById('modal_tipo').value    = 'C';
-
   new bootstrap.Modal(document.getElementById('modalNuevoCliente')).show();
 }
 
@@ -462,7 +429,6 @@ async function guardarClienteModal() {
   const btn = document.getElementById('btnGuardarCliente');
   const errDiv = document.getElementById('modalError');
   const errMsg = document.getElementById('modalErrorMsg');
-
   const nit       = document.getElementById('modal_nit').value.trim();
   const nombre    = document.getElementById('modal_nombre').value.trim();
   const celular   = document.getElementById('modal_celular').value.trim();
@@ -470,72 +436,50 @@ async function guardarClienteModal() {
   const tipo_id   = document.getElementById('modal_tipo_id').value;
   const tipo      = document.getElementById('modal_tipo').value;
   const correo    = document.getElementById('modal_correo').value.trim();
-
   if (!nit || !nombre || !celular || !direccion) {
-    errMsg.textContent = 'Completa todos los campos obligatorios.';
+    errMsg.textContent = '{{ _("Completa todos los campos obligatorios.") }}';
     errDiv.style.display = '';
     return;
   }
-
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ _("Guardando...") }}';
   errDiv.style.display = 'none';
-
   try {
     const res = await fetch('{{ url_for("facturas.api_crear_cliente") }}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nit, nombre, celular, direccion,
-        tipo_identificacion: tipo_id,
-        tipo, correo
-      })
+      body: JSON.stringify({ nit, nombre, celular, direccion, tipo_identificacion: tipo_id, tipo, correo })
     });
-
     const data = await res.json();
-
     if (!res.ok) {
-      errMsg.textContent = data.error || 'Error al crear el cliente.';
+      errMsg.textContent = data.error || '{{ _("Error al crear el cliente.") }}';
       errDiv.style.display = '';
       return;
     }
-
-    // Agregar al array local y al mapa
     clientesArr.push(data);
     clientesMap[data.id] = data;
-
-    // Cerrar modal y seleccionar el cliente recién creado
-    bootstrap.Modal.getInstance(
-      document.getElementById('modalNuevoCliente')
-    ).hide();
-
+    bootstrap.Modal.getInstance(document.getElementById('modalNuevoCliente')).hide();
     seleccionarCliente(data.id);
-
   } catch (err) {
-    errMsg.textContent = 'Error de conexión. Intenta de nuevo.';
+    errMsg.textContent = '{{ _("Error de conexión. Intenta de nuevo.") }}';
     errDiv.style.display = '';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Crear cliente';
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> {{ _("Crear cliente") }}';
   }
 }
 
-
-// ══════════════════════════════════════════
-//  TABLA DE PRODUCTOS
-// ══════════════════════════════════════════
 function agregarFila() {
   const tbody = document.getElementById('itemsBody');
   const opts  = Object.entries(insumos).map(([id, ins]) =>
     `<option value="${id}">${ins.descripcion}</option>`
   ).join('');
-
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td class="ps-4">
       <select name="id_insumo[]" class="form-select form-select-sm"
               onchange="autocompletar(this)" required>
-        <option value="">— Producto —</option>${opts}
+        <option value="">— {{ _('Producto') }} —</option>${opts}
       </select>
       <input type="hidden" name="descripcion[]" class="desc-hidden">
       <div class="inp-stock-info small mt-1" style="display:none;"></div>
@@ -559,8 +503,7 @@ function agregarFila() {
              oninput="recalcular()">
     </td>
     <td>
-      <span class="inp-sub fw-semibold"
-            style="color:var(--color-primary);">$0</span>
+      <span class="inp-sub fw-semibold" style="color:var(--color-primary);">$0</span>
     </td>
     <td>
       <button type="button" class="btn btn-sm btn-outline-danger"
@@ -575,23 +518,18 @@ function autocompletar(sel) {
   const tr  = sel.closest('tr');
   const id  = sel.value;
   if (!id || !insumos[id]) return;
-
   const ins = insumos[id];
   tr.querySelector('.desc-hidden').value = ins.descripcion;
   tr.querySelector('.inp-precio').value  = ins.valor;
   tr.querySelector('.inp-iva').value     = ins.iva.toFixed(2);
-
   const stockInfo = tr.querySelector('.inp-stock-info');
   const stock     = ins.stock ?? 0;
   stockInfo.style.display = '';
   if (stock > 0) {
-    stockInfo.innerHTML = `<span class="text-success">
-      <i class="bi bi-box me-1"></i>Stock: <strong>${stock}</strong></span>`;
+    stockInfo.innerHTML = `<span class="text-success"><i class="bi bi-box me-1"></i>Stock: <strong>${stock}</strong></span>`;
   } else {
-    stockInfo.innerHTML = `<span class="text-danger">
-      <i class="bi bi-exclamation-triangle me-1"></i>Sin stock</span>`;
+    stockInfo.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>{{ _('Sin stock') }}</span>`;
   }
-
   const inputCant = tr.querySelector('.inp-cant');
   inputCant.max   = stock;
   if (stock === 0) {
@@ -643,19 +581,18 @@ function recalcular() {
 
 function validarFormulario() {
   if (!document.getElementById('id_cliente_hidden').value) {
-    alert('Selecciona un cliente antes de guardar.');
+    alert('{{ _("Selecciona un cliente antes de guardar.") }}');
     document.getElementById('buscarCliente').focus();
     return false;
   }
   const filas = document.querySelectorAll('#itemsBody tr');
   if (filas.length === 0) {
-    alert('Agrega al menos un producto.');
+    alert('{{ _("Agrega al menos un producto.") }}');
     return false;
   }
   return true;
 }
 
-// Agregar primera fila al cargar
 agregarFila();
 </script>
 

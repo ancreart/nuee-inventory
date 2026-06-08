@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard — Nuée{% endblock %}
-{% block page_title %}Panel de Control{% endblock %}
+{% block page_title %}{{ _('Panel de Control') }}{% endblock %}
 
 {% block content %}
 
@@ -16,18 +16,18 @@
     <div class="an-icon"><i class="bi bi-x-octagon-fill"></i></div>
     <div class="an-body">
       <div class="an-title">
-        {{ vencidos|length }} producto{{ 's' if vencidos|length > 1 else '' }} vencido{{ 's' if vencidos|length > 1 else '' }}
+        {{ ngettext('%(num)d producto vencido', '%(num)d productos vencidos', vencidos|length) }}
       </div>
       <div class="an-pills">
         {% for ins in vencidos %}
-        <span class="an-pill" title="{{ ins.descripcion }} — venció {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}">
+        <span class="an-pill" title="{{ ins.descripcion }} — {{ _('venció') }} {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}">
           {{ ins.descripcion }} — {{ ins.fecha_vencimiento.strftime('%d/%m/%Y') }}
         </span>
         {% endfor %}
       </div>
     </div>
     <a href="{{ url_for('insumos.index') }}" class="an-btn">
-      Revisar <i class="bi bi-arrow-right"></i>
+      {{ _('Revisar') }} <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
@@ -37,7 +37,7 @@
     <div class="an-icon"><i class="bi bi-hourglass-split"></i></div>
     <div class="an-body">
       <div class="an-title">
-        {{ por_vencer|length }} producto{{ 's' if por_vencer|length > 1 else '' }} vence{{ 'n' if por_vencer|length > 1 else '' }} en los próximos 30 días
+        {{ ngettext('%(num)d producto vence en los próximos 30 días', '%(num)d productos vencen en los próximos 30 días', por_vencer|length) }}
       </div>
       <div class="an-pills">
         {% for ins in por_vencer %}
@@ -48,7 +48,7 @@
       </div>
     </div>
     <a href="{{ url_for('insumos.index') }}" class="an-btn">
-      Revisar <i class="bi bi-arrow-right"></i>
+      {{ _('Revisar') }} <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
@@ -58,18 +58,18 @@
     <div class="an-icon"><i class="bi bi-box-seam"></i></div>
     <div class="an-body">
       <div class="an-title">
-        {{ stock_bajo|length }} producto{{ 's' if stock_bajo|length > 1 else '' }} con stock bajo (≤ 5 unidades)
+        {{ ngettext('%(num)d producto con stock bajo (≤ 5 unidades)', '%(num)d productos con stock bajo (≤ 5 unidades)', stock_bajo|length) }}
       </div>
       <div class="an-pills">
         {% for ins in stock_bajo %}
-        <span class="an-pill" title="{{ ins.descripcion }} — {{ ins.cantidad }} uds.">
-          {{ ins.descripcion }} — {{ ins.cantidad }} uds.
+        <span class="an-pill" title="{{ ins.descripcion }} — {{ ins.cantidad }} {{ _('uds.') }}">
+          {{ ins.descripcion }} — {{ ins.cantidad }} {{ _('uds.') }}
         </span>
         {% endfor %}
       </div>
     </div>
     <a href="{{ url_for('insumos.index') }}" class="an-btn">
-      Revisar <i class="bi bi-arrow-right"></i>
+      {{ _('Revisar') }} <i class="bi bi-arrow-right"></i>
     </a>
   </div>
   {% endif %}
@@ -86,10 +86,10 @@
     <div class="stat-card">
       <div class="d-flex justify-content-between align-items-start">
         <div>
-          <div class="stat-label">Total Productos</div>
+          <div class="stat-label">{{ _('Total Productos') }}</div>
           <div class="stat-value">{{ total_insumos }}</div>
           <div class="small text-muted mt-2">
-            <i class="bi bi-box-seam me-1"></i> Activos en inventario
+            <i class="bi bi-box-seam me-1"></i> {{ _('Activos en inventario') }}
           </div>
         </div>
         <div class="p-3 rounded" style="background: rgba(17,17,17,0.06);">
@@ -103,10 +103,10 @@
     <div class="stat-card success">
       <div class="d-flex justify-content-between align-items-start">
         <div>
-          <div class="stat-label">Clientes Activos</div>
+          <div class="stat-label">{{ _('Clientes Activos') }}</div>
           <div class="stat-value">{{ total_clientes }}</div>
           <div class="small text-muted mt-2">
-            <i class="bi bi-people me-1"></i> Registrados
+            <i class="bi bi-people me-1"></i> {{ _('Registrados') }}
           </div>
         </div>
         <div class="p-3 rounded" style="background: rgba(99,153,34,0.1);">
@@ -120,10 +120,10 @@
     <div class="stat-card warning">
       <div class="d-flex justify-content-between align-items-start">
         <div>
-          <div class="stat-label">Movimientos Hoy</div>
+          <div class="stat-label">{{ _('Movimientos Hoy') }}</div>
           <div class="stat-value">{{ movimientos_hoy }}</div>
           <div class="small text-muted mt-2">
-            <i class="bi bi-clock me-1"></i> Actualizado ahora
+            <i class="bi bi-clock me-1"></i> {{ _('Actualizado ahora') }}
           </div>
         </div>
         <div class="p-3 rounded" style="background: rgba(186,117,23,0.1);">
@@ -141,21 +141,21 @@
 {% if vencidos or por_vencer or stock_bajo %}
 <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
   <span class="text-muted small fw-semibold me-1">
-    <i class="bi bi-bell-fill me-1"></i>ALERTAS ACTIVAS:
+    <i class="bi bi-bell-fill me-1"></i>{{ _('ALERTAS ACTIVAS:') }}
   </span>
   {% if vencidos %}
   <span class="badge-alert danger">
-    <i class="bi bi-x-octagon"></i>{{ vencidos|length }} vencido{{ 's' if vencidos|length > 1 else '' }}
+    <i class="bi bi-x-octagon"></i>{{ ngettext('%(num)d vencido', '%(num)d vencidos', vencidos|length) }}
   </span>
   {% endif %}
   {% if por_vencer %}
   <span class="badge-alert warning">
-    <i class="bi bi-hourglass-split"></i>{{ por_vencer|length }} por vencer
+    <i class="bi bi-hourglass-split"></i>{{ ngettext('%(num)d por vencer', '%(num)d por vencer', por_vencer|length) }}
   </span>
   {% endif %}
   {% if stock_bajo %}
   <span class="badge-alert info">
-    <i class="bi bi-box-seam"></i>{{ stock_bajo|length }} stock bajo
+    <i class="bi bi-box-seam"></i>{{ ngettext('%(num)d stock bajo', '%(num)d stock bajo', stock_bajo|length) }}
   </span>
   {% endif %}
 </div>
@@ -170,10 +170,10 @@
     <div class="card h-100">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-          <i class="bi bi-bar-chart-fill me-2"></i>Movimientos — Últimos 7 días
+          <i class="bi bi-bar-chart-fill me-2"></i>{{ _('Movimientos — Últimos 7 días') }}
         </h5>
         <span class="badge bg-primary-subtle small" style="color: var(--text-secondary);">
-          Entradas vs Salidas
+          {{ _('Entradas vs Salidas') }}
         </span>
       </div>
       <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
@@ -186,7 +186,7 @@
     <div class="card h-100">
       <div class="card-header">
         <h5 class="mb-0">
-        <i class="bi bi-bar-chart-line me-2" style="color: #BA7517;"></i>Top 5 más vendidos
+        <i class="bi bi-bar-chart-line me-2" style="color: #BA7517;"></i>{{ _('Top 5 más vendidos') }}
         </h5>
       </div>
       <div class="card-body p-0">
@@ -195,8 +195,8 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Producto</th>
-                <th class="text-end">Uds.</th>
+                <th>{{ _('Producto') }}</th>
+                <th class="text-end">{{ _('Uds.') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -211,7 +211,7 @@
               {% else %}
               <tr>
                 <td colspan="3" class="text-center py-4 text-muted">
-                  <i class="bi bi-inbox fs-3 d-block mb-2"></i>Sin datos
+                  <i class="bi bi-inbox fs-3 d-block mb-2"></i>{{ _('Sin datos') }}
                 </td>
               </tr>
               {% endfor %}
@@ -232,10 +232,10 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-          <i class="bi bi-clock-history me-2"></i>Últimos Movimientos
+          <i class="bi bi-clock-history me-2"></i>{{ _('Últimos Movimientos') }}
         </h5>
         <a href="{{ url_for('movimientos.index') }}" class="btn btn-sm btn-outline-primary">
-          Ver todos <i class="bi bi-arrow-right ms-1"></i>
+          {{ _('Ver todos') }} <i class="bi bi-arrow-right ms-1"></i>
         </a>
       </div>
       <div class="card-body p-0">
@@ -243,11 +243,11 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Fecha</th>
+                <th>{{ _('ID') }}</th>
+                <th>{{ _('Producto') }}</th>
+                <th>{{ _('Cantidad') }}</th>
+                <th>{{ _('Precio') }}</th>
+                <th>{{ _('Fecha') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -263,7 +263,7 @@
               <tr>
                 <td colspan="5" class="text-center py-4 text-muted">
                   <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                  No hay movimientos registrados
+                  {{ _('No hay movimientos registrados') }}
                 </td>
               </tr>
               {% endfor %}
@@ -274,16 +274,16 @@
     </div>
   </div>
 </div>
+
 {# ══════════════════════════════════════════
    CHART.JS
    ══════════════════════════════════════════ #}
-
-{# Datos de Jinja2 aislados en atributos data-* para evitar conflictos
-   entre la sintaxis de templates y el analizador de JavaScript de VS Code #}
 <div id="chart-data"
-     data-labels="{{ chart_labels | tojson }}"
-     data-entradas="{{ chart_entradas | tojson }}"
-     data-salidas="{{ chart_salidas | tojson }}"
+     data-labels='{{ chart_labels | tojson }}'
+     data-entradas='{{ chart_entradas | tojson }}'
+     data-salidas='{{ chart_salidas | tojson }}'
+     data-label-entradas="{{ _('Entradas') }}"
+     data-label-salidas="{{ _('Salidas') }}"
      style="display:none;">
 </div>
 
@@ -294,6 +294,8 @@
   const labels    = JSON.parse(chartData.dataset.labels);
   const entradas  = JSON.parse(chartData.dataset.entradas);
   const salidas   = JSON.parse(chartData.dataset.salidas);
+  const labelEntradas = chartData.dataset.labelEntradas;
+  const labelSalidas  = chartData.dataset.labelSalidas;
 
   const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
 
@@ -312,7 +314,7 @@
       labels: labels,
       datasets: [
         {
-          label: 'Entradas',
+          label: labelEntradas,
           data: entradas,
           backgroundColor: 'rgba(99, 153, 34, 0.7)',
           borderColor:     'rgba(99, 153, 34, 1)',
@@ -320,7 +322,7 @@
           borderRadius: 6,
         },
         {
-          label: 'Salidas',
+          label: labelSalidas,
           data: salidas,
           backgroundColor: 'rgba(17, 17, 17, 0.6)',
           borderColor:     'rgba(17, 17, 17, 0.9)',
@@ -386,5 +388,11 @@
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 </script>
+<!-- DEBUG TEMPORAL -->
+<pre style="background:#111;color:#0f0;padding:1rem;font-size:0.75rem;margin-top:2rem;">
+labels:   {{ chart_labels }}
+entradas: {{ chart_entradas }}
+salidas:  {{ chart_salidas }}
+</pre>
 
 {% endblock %}

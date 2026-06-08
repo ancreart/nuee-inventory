@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Editar Contacto — Nuée{% endblock %}
-{% block page_title %}Editar Contacto{% endblock %}
+{% block title %}{{ _('Editar Contacto') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Editar Contacto') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,99 +9,91 @@
       <div class="card">
         <div class="card-header">
           <h5 class="mb-0">
-            <i class="bi bi-pencil-square me-2"></i>Editar Información
+            <i class="bi bi-pencil-square me-2"></i>{{ _('Editar Información') }}
           </h5>
         </div>
         <div class="card-body">
           <form method="POST"
             action="{{ url_for('clienteproveedor.editar', id=cliente.id) }}">
 
-            <!-- Fila 1: Tipo de identificación + Número de identificación -->
             <div class="row mb-3">
               <div class="col-md-4">
-                <label class="form-label fw-semibold">Tipo de Identificación</label>
+                <label class="form-label fw-semibold">{{ _('Tipo de Identificación') }}</label>
                 <select class="form-select form-select-lg" name="tipo_identificacion">
                   <option value="NIT"
                     {% if cliente.tipo_identificacion == 'NIT' or not cliente.tipo_identificacion %}
                     selected{% endif %}>NIT</option>
                   <option value="CC"
                     {% if cliente.tipo_identificacion == 'CC' %}
-                    selected{% endif %}>CC — Cédula de Ciudadanía</option>
+                    selected{% endif %}>CC — {{ _('Cédula de Ciudadanía') }}</option>
                   <option value="CE"
                     {% if cliente.tipo_identificacion == 'CE' %}
-                    selected{% endif %}>CE — Cédula de Extranjería</option>
+                    selected{% endif %}>CE — {{ _('Cédula de Extranjería') }}</option>
                 </select>
               </div>
               <div class="col-md-8">
-                <label class="form-label fw-semibold">Número de Identificación</label>
+                <label class="form-label fw-semibold">{{ _('Número de Identificación') }}</label>
                 <input type="text" class="form-control form-control-lg"
                   name="nit" value="{{ cliente.nit }}" required
                   placeholder="Ej: 1020304050">
               </div>
             </div>
 
-            <!-- Fila 2: Nombre completo -->
             <div class="mb-3">
-              <label class="form-label fw-semibold">Nombre completo / Razón Social</label>
+              <label class="form-label fw-semibold">{{ _('Nombre completo / Razón Social') }}</label>
               <input type="text" class="form-control form-control-lg"
                 name="nombre" value="{{ cliente.nombre }}" required>
             </div>
 
-            <!-- Fila 3: Dirección + Celular -->
             <div class="row mb-3">
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Dirección</label>
+                <label class="form-label fw-semibold">{{ _('Dirección') }}</label>
                 <input type="text" class="form-control"
                   name="direccion" value="{{ cliente.direccion or '' }}">
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Teléfono / Celular</label>
+                <label class="form-label fw-semibold">{{ _('Teléfono / Celular') }}</label>
                 <input type="text" class="form-control"
                   name="celular" value="{{ cliente.celular or '' }}">
               </div>
             </div>
 
-            <!-- Fila 4: Correo + Tipo de contacto -->
             <div class="row mb-3">
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Correo Electrónico</label>
+                <label class="form-label fw-semibold">{{ _('Correo Electrónico') }}</label>
                 <div class="input-group">
-                  <span class="input-group-text">
-                    <i class="bi bi-envelope"></i>
-                  </span>
+                  <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                   <input type="email" class="form-control"
-                    name="correo"
-                    value="{{ cliente.correo or '' }}"
+                    name="correo" value="{{ cliente.correo or '' }}"
                     placeholder="correo@ejemplo.com">
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Tipo de contacto</label>
+                <label class="form-label fw-semibold">{{ _('Tipo de contacto') }}</label>
                 <div class="btn-group w-100" role="group">
                   <input type="radio" class="btn-check" name="tipo"
                     id="tipoCliente" value="C"
                     {% if cliente.tipo == 'C' %}checked{% endif %}>
                   <label class="btn btn-outline-primary" for="tipoCliente">
-                    <i class="bi bi-person me-1"></i>Cliente
+                    <i class="bi bi-person me-1"></i>{{ _('Cliente') }}
                   </label>
                   <input type="radio" class="btn-check" name="tipo"
                     id="tipoProveedor" value="P"
                     {% if cliente.tipo == 'P' %}checked{% endif %}>
                   <label class="btn btn-outline-warning" for="tipoProveedor">
-                    <i class="bi bi-truck me-1"></i>Proveedor
+                    <i class="bi bi-truck me-1"></i>{{ _('Proveedor') }}
                   </label>
                 </div>
               </div>
             </div>
 
-            <!-- Botones -->
             <div class="d-flex gap-3 pt-3 border-top">
               <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-check-lg me-2"></i>Guardar Cambios
+                <i class="bi bi-check-lg me-2"></i>{{ _('Guardar Cambios') }}
               </button>
               <a href="{{ url_for('clienteproveedor.index') }}"
                 class="btn btn-outline-secondary btn-lg">
-                Cancelar
+                {{ _('Cancelar') }}
               </a>
             </div>
 

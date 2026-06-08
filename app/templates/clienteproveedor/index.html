@@ -1,25 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Clientes / Proveedores — Nuée{% endblock %}
-{% block page_title %}Gestión de Clientes y Proveedores{% endblock %}
+{% block title %}{{ _('Clientes / Proveedores') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Gestión de Clientes y Proveedores') }}{% endblock %}
 
 {% block content %}
+
+{% set msg_eliminar_contacto = _('¿Estás seguro de eliminar este contacto?') %}
+
 <div class="container-fluid">
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <p class="text-muted mb-0">Administra tus contactos comerciales</p>
+            <p class="text-muted mb-0">{{ _('Administra tus contactos comerciales') }}</p>
         </div>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoContacto">
             <i class="bi bi-plus-lg"></i>
-            Nuevo Contacto
+            {{ _('Nuevo Contacto') }}
         </button>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="stat-card">
-                <div class="stat-label">Total Contactos</div>
+                <div class="stat-label">{{ _('Total Contactos') }}</div>
                 <div class="stat-value">
                     {{ (clientes|selectattr("tipo", "equalto", "C")|list|length) +
                        (clientes|selectattr("tipo", "equalto", "P")|list|length) }}
@@ -28,28 +29,26 @@
         </div>
         <div class="col-md-4">
             <div class="stat-card success">
-                <div class="stat-label">Clientes</div>
+                <div class="stat-label">{{ _('Clientes') }}</div>
                 <div class="stat-value">{{ clientes|selectattr("tipo", "equalto", "C")|list|length }}</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card warning">
-                <div class="stat-label">Proveedores</div>
+                <div class="stat-label">{{ _('Proveedores') }}</div>
                 <div class="stat-value">{{ clientes|selectattr("tipo", "equalto", "P")|list|length }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Table Card -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span><i class="bi bi-people-fill me-2"></i>Listado de Contactos</span>
-
-            <!-- Buscador -->
+            <span><i class="bi bi-people-fill me-2"></i>{{ _('Listado de Contactos') }}</span>
             <div class="position-relative" style="width: 350px;">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" id="buscarContacto" placeholder="Escribe nombre o NIT..."
+                    <input type="text" class="form-control" id="buscarContacto"
+                        placeholder="{{ _('Escribe nombre o NIT...') }}"
                         autocomplete="off" oninput="buscarContactos(this.value)">
                     <button class="btn btn-outline-secondary" type="button" onclick="mostrarTodosContactos()">
                         <i class="bi bi-list-ul"></i>
@@ -65,13 +64,13 @@
                 <table class="table table-hover mb-0" id="tablaContactos">
                     <thead>
                         <tr>
-                            <th>NIT</th>
-                            <th>Nombre</th>
-                            <th>Dirección</th>
-                            <th>Celular</th>
-                            <th>Tipo</th>
+                            <th>{{ _('NIT') }}</th>
+                            <th>{{ _('Nombre') }}</th>
+                            <th>{{ _('Dirección') }}</th>
+                            <th>{{ _('Celular') }}</th>
+                            <th>{{ _('Tipo') }}</th>
                             {% if session.get('rol') == 'admin' %}
-                            <th class="text-end">Acciones</th>
+                            <th class="text-end">{{ _('Acciones') }}</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -85,9 +84,9 @@
                             <td>{{ cliente.celular or '-' }}</td>
                             <td>
                                 {% if cliente.tipo == 'C' %}
-                                <span class="badge-soft bg-primary-subtle text-primary">Cliente</span>
+                                <span class="badge-soft bg-primary-subtle text-primary">{{ _('Cliente') }}</span>
                                 {% elif cliente.tipo == 'P' %}
-                                <span class="badge-soft bg-warning-subtle text-warning">Proveedor</span>
+                                <span class="badge-soft bg-warning-subtle text-warning">{{ _('Proveedor') }}</span>
                                 {% else %}
                                 <span class="badge-soft bg-secondary-subtle text-secondary">{{ cliente.tipo }}</span>
                                 {% endif %}
@@ -95,11 +94,11 @@
                             {% if session.get('rol') == 'admin' %}
                             <td class="text-end">
                                 <a href="{{ url_for('clienteproveedor.editar', id=cliente.id) }}"
-                                    class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                    class="btn btn-sm btn-outline-primary me-1" title="{{ _('Editar') }}">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger"
-                                    onclick="eliminarContacto('{{ cliente.id }}')" title="Eliminar">
+                                    onclick="eliminarContacto('{{ cliente.id }}')" title="{{ _('Eliminar') }}">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -110,7 +109,7 @@
                             <td colspan="{% if session.get('rol') == 'admin' %}6{% else %}5{% endif %}"
                                 class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                                No hay contactos registrados
+                                {{ _('No hay contactos registrados') }}
                             </td>
                         </tr>
                         {% endfor %}
@@ -121,13 +120,12 @@
     </div>
 </div>
 
-<!-- Modal Nuevo Contacto -->
 <div class="modal fade" id="modalNuevoContacto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-person-plus me-2"></i>Nuevo Contacto
+                    <i class="bi bi-person-plus me-2"></i>{{ _('Nuevo Contacto') }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -135,28 +133,26 @@
                 {{ form.hidden_tag() }}
                 <div class="modal-body">
 
-                    <!-- Tipo de contacto -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Tipo de Contacto</label>
+                        <label class="form-label fw-semibold">{{ _('Tipo de Contacto') }}</label>
                         <div class="d-flex gap-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio"
                                     name="tipo" id="tipoCliente" value="C" checked>
                                 <label class="form-check-label fw-semibold" for="tipoCliente">
-                                    <i class="bi bi-person me-1"></i>Cliente
+                                    <i class="bi bi-person me-1"></i>{{ _('Cliente') }}
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio"
                                     name="tipo" id="tipoProveedor" value="P">
                                 <label class="form-check-label fw-semibold" for="tipoProveedor">
-                                    <i class="bi bi-truck me-1"></i>Proveedor
+                                    <i class="bi bi-truck me-1"></i>{{ _('Proveedor') }}
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Identificación -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-5">
                             {{ form.tipo_identificacion.label(class="form-label fw-semibold") }}
@@ -169,7 +165,6 @@
                         </div>
                     </div>
 
-                    <!-- Nombre -->
                     <div class="mb-3">
                         {{ form.nombre.label(class="form-label fw-semibold") }}
                         <span class="text-danger">*</span>
@@ -177,7 +172,6 @@
                             placeholder="Ej: Juan Pérez o Laboratorios Natura") }}
                     </div>
 
-                    <!-- Dirección y Celular -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             {{ form.direccion.label(class="form-label fw-semibold") }}
@@ -191,26 +185,26 @@
                         </div>
                     </div>
 
-                    <!-- Correo -->
                     <div class="mb-3">
                         {{ form.correo.label(class="form-label fw-semibold") }}
                         {{ form.correo(class="form-control",
                             placeholder="Ej: contacto@empresa.com") }}
-                        <small class="text-muted">Opcional — usado para envío de facturas</small>
+                        <small class="text-muted">{{ _('Opcional — usado para envío de facturas') }}</small>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
+                        data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i>Guardar Contacto
+                        <i class="bi bi-check-lg me-1"></i>{{ _('Guardar Contacto') }}
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 <div id="clientes-data"
      data-clientes="{{ clientes | map(attribute='id') | list | tojson }}"
      style="display:none;">
@@ -227,8 +221,6 @@
 </div>
 
 <script>
-  // Construye el mapa de clientes desde atributos data-* del HTML
-  // para evitar conflictos entre la sintaxis Jinja2 y el parser JS de VS Code
   const clientesMap = {};
   document.querySelectorAll('.cliente-item').forEach(el => {
     const id = parseInt(el.dataset.id);
@@ -244,27 +236,21 @@
 
   function buscarContactos(query) {
     const dropdown = document.getElementById('dropdownContactos');
-    if (query.length < 2) {
-      dropdown.style.display = 'none';
-      return;
-    }
+    if (query.length < 2) { dropdown.style.display = 'none'; return; }
     const filtro     = query.toLowerCase();
     const resultados = Object.values(clientesMap).filter(c =>
       c.nombre.toLowerCase().includes(filtro) ||
       c.nit.toLowerCase().includes(filtro)
     ).slice(0, 10);
-
     dropdown.innerHTML = resultados.length === 0
-      ? '<div class="dropdown-item text-muted">No se encontraron contactos</div>'
+      ? '<div class="dropdown-item text-muted">{{ _("No se encontraron contactos") }}</div>'
       : resultados.map(c => `
           <a href="#" class="dropdown-item py-2"
              onclick="seleccionarContacto(${c.id}); return false;">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <strong>${c.nombre}</strong>
-                <div class="small text-muted">
-                  NIT: ${c.nit} · ${c.tipo}
-                </div>
+                <div class="small text-muted">NIT: ${c.nit} · ${c.tipo}</div>
               </div>
               <i class="bi bi-chevron-right text-muted"></i>
             </div>
@@ -300,7 +286,7 @@
   }
 
   function eliminarContacto(id) {
-    if (confirm('¿Estás seguro de eliminar este contacto?')) {
+    if (confirm('{{ msg_eliminar_contacto }}')) {
       fetch(`/clienteproveedor/eliminar/${id}`, {
         method: 'POST',
         headers: {
@@ -311,9 +297,9 @@
       .then(r => r.json())
       .then(data => {
         if (data.success) location.reload();
-        else alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
+        else alert('{{ _("Error al eliminar:") }} ' + (data.error || '{{ _("Error desconocido") }}'));
       })
-      .catch(() => alert('Error al eliminar el contacto'));
+      .catch(() => alert('{{ _("Error al eliminar el contacto") }}'));
     }
   }
 

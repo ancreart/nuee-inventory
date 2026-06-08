@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Producto — Nuée{% endblock %}
-{% block page_title %}Registrar Nuevo Insumo{% endblock %}
+{% block title %}{{ _('Nuevo Producto') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Registrar Nuevo Insumo') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -11,23 +11,22 @@
         {{ form.hidden_tag() }}
         <div class="card-body p-4 p-md-5">
 
-          <!-- SECCIÓN 1: INFORMACIÓN DEL PRODUCTO -->
           <div class="mb-5">
             <h5 class="mb-4 d-flex align-items-center">
               <span class="badge bg-primary me-2">1</span>
-              Información del Producto
+              {{ _('Información del Producto') }}
             </h5>
             <div class="row g-3">
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-upc-scan me-1"></i>Código
+                  <i class="bi bi-upc-scan me-1"></i>{{ _('Código') }}
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-hash"></i></span>
                   {{ form.codigo(class="form-control form-control-lg", placeholder="Ej: INS-001") }}
                 </div>
-                <small class="text-muted">Código único del producto</small>
+                <small class="text-muted">{{ _('Código único del producto') }}</small>
                 {% if form.codigo.errors %}
                   <div class="text-danger small mt-1">{{ form.codigo.errors[0] }}</div>
                 {% endif %}
@@ -35,13 +34,13 @@
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-layers me-1"></i>Lote
+                  <i class="bi bi-layers me-1"></i>{{ _('Lote') }}
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
-                  {{ form.descripcion(class="form-control form-control-lg", placeholder="Ej: Sérum Vitamina C 30ml") }}
+                  {{ form.lote(class="form-control form-control-lg", placeholder="Ej: L-2024-001") }}
                 </div>
-                <small class="text-muted">Número de lote del fabricante</small>
+                <small class="text-muted">{{ _('Número de lote del fabricante') }}</small>
                 {% if form.lote.errors %}
                   <div class="text-danger small mt-1">{{ form.lote.errors[0] }}</div>
                 {% endif %}
@@ -49,7 +48,7 @@
 
               <div class="col-12">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-card-text me-1"></i>Descripción / Nombre
+                  <i class="bi bi-card-text me-1"></i>{{ _('Descripción / Nombre') }}
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-capsule"></i></span>
@@ -63,41 +62,40 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 2: DETALLES Y PRECIOS -->
           <div class="mb-5">
             <h5 class="mb-4 d-flex align-items-center">
               <span class="badge bg-primary me-2">2</span>
-              Detalles y Precios
+              {{ _('Detalles y Precios') }}
             </h5>
             <div class="row g-3">
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                 <i class="bi bi-shield-check me-1"></i>Registro Sanitario
+                  <i class="bi bi-shield-check me-1"></i>{{ _('Registro Sanitario') }}
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-award"></i></span>
                   {{ form.invima(class="form-control", placeholder="Ej: INV12345") }}
                 </div>
-               <small class="text-muted">Opcional — Registro sanitario</small>
+                <small class="text-muted">{{ _('Opcional — Registro sanitario') }}</small>
               </div>
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-calendar-x me-1"></i>Fecha de Vencimiento
+                  <i class="bi bi-calendar-x me-1"></i>{{ _('Fecha de Vencimiento') }}
                 </label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                   {{ form.fecha_vencimiento(class="form-control", id="fechaVencimiento", onchange="validarVencimiento()") }}
                 </div>
                 <small id="alertaVencimiento" class="text-danger fw-bold" style="display:none;">
-                  <i class="bi bi-exclamation-triangle-fill"></i> Producto vencido
+                  <i class="bi bi-exclamation-triangle-fill"></i> {{ _('Producto vencido') }}
                 </small>
               </div>
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-currency-dollar me-1"></i>Valor Unitario
+                  <i class="bi bi-currency-dollar me-1"></i>{{ _('Valor Unitario') }}
                 </label>
                 <div class="input-group input-group-lg">
                   <span class="input-group-text">$</span>
@@ -110,7 +108,7 @@
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-percent me-1"></i>IVA %
+                  <i class="bi bi-percent me-1"></i>{{ _('IVA %%') }}
                 </label>
                 <div class="input-group input-group-lg">
                   {{ form.iva(class="form-control", step="0.01", min="0", max="100", id="iva", oninput="calcularPrecioFinal()") }}
@@ -118,13 +116,13 @@
                 </div>
                 <div class="form-check mt-2">
                   <input class="form-check-input" type="checkbox" id="aplicaIva" onchange="toggleIva()">
-                  <label class="form-check-label" for="aplicaIva">Aplica IVA (19%)</label>
+                  <label class="form-check-label" for="aplicaIva">{{ _('Aplica IVA (19%)') }}</label>
                 </div>
               </div>
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold" style="color:var(--color-primary);">
-                  <i class="bi bi-cash-stack me-1"></i>Precio Final
+                  <i class="bi bi-cash-stack me-1"></i>{{ _('Precio Final') }}
                 </label>
                 <div class="p-3 rounded-3 border"
                   style="background:var(--bg-hover); border-color:var(--color-primary) !important;">
@@ -132,19 +130,19 @@
                     <span class="fs-4 fw-bold" style="color:var(--color-primary);">$</span>
                     <span id="precioFinal" class="display-6 fw-bold ms-2" style="color:var(--color-primary);">0.00</span>
                   </div>
-                  <small class="text-muted">Valor + IVA</small>
+                  <small class="text-muted">{{ _('Valor + IVA') }}</small>
                 </div>
               </div>
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-boxes me-1"></i>Cantidad Inicial
+                  <i class="bi bi-boxes me-1"></i>{{ _('Cantidad Inicial') }}
                 </label>
                 <div class="input-group input-group-lg">
                   <span class="input-group-text"><i class="bi bi-stack"></i></span>
                   {{ form.cantidad(class="form-control", placeholder="0", min="0") }}
                 </div>
-                <small class="text-muted">Unidades disponibles al registrar</small>
+                <small class="text-muted">{{ _('Unidades disponibles al registrar') }}</small>
                 {% if form.cantidad.errors %}
                   <div class="text-danger small mt-1">{{ form.cantidad.errors[0] }}</div>
                 {% endif %}
@@ -152,13 +150,13 @@
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-exclamation-triangle me-1"></i>Stock Mínimo
+                  <i class="bi bi-exclamation-triangle me-1"></i>{{ _('Stock Mínimo') }}
                 </label>
                 <div class="input-group input-group-lg">
                   <span class="input-group-text"><i class="bi bi-bell"></i></span>
                   {{ form.stock_minimo(class="form-control", placeholder="5", min="0") }}
                 </div>
-                <small class="text-muted">Alerta cuando el stock baje de este número</small>
+                <small class="text-muted">{{ _('Alerta cuando el stock baje de este número') }}</small>
                 {% if form.stock_minimo.errors %}
                   <div class="text-danger small mt-1">{{ form.stock_minimo.errors[0] }}</div>
                 {% endif %}
@@ -166,24 +164,23 @@
 
               <div class="col-md-4">
                 <label class="form-label fw-semibold">
-                  <i class="bi bi-toggle-on me-1"></i>Estado
+                  <i class="bi bi-toggle-on me-1"></i>{{ _('Estado') }}
                 </label>
                 <div class="form-check form-switch mt-2">
                   {{ form.activo(class="form-check-input", id="activoSwitch", role="switch") }}
-                  <label class="form-check-label" for="activoSwitch">Producto activo</label>
+                  <label class="form-check-label" for="activoSwitch">{{ _('Producto activo') }}</label>
                 </div>
               </div>
 
             </div>
           </div>
 
-          <!-- BOTONES -->
           <div class="d-flex justify-content-between align-items-center pt-3 border-top">
             <a href="{{ url_for('insumos.index') }}" class="btn btn-outline-secondary btn-lg">
-              <i class="bi bi-arrow-left me-2"></i>Cancelar
+              <i class="bi bi-arrow-left me-2"></i>{{ _('Cancelar') }}
             </a>
             <button type="submit" class="btn btn-primary btn-lg px-5">
-              <i class="bi bi-check-circle-fill me-2"></i>Guardar Insumo
+              <i class="bi bi-check-circle-fill me-2"></i>{{ _('Guardar Insumo') }}
             </button>
           </div>
 
@@ -198,19 +195,16 @@
   function formatCOP(valor) {
     return Math.round(valor).toLocaleString('es-CO');
   }
-
   function calcularPrecioFinal() {
     const valor = parseFloat(document.getElementById('valor').value) || 0;
     const iva   = parseFloat(document.getElementById('iva').value)   || 0;
     document.getElementById('precioFinal').textContent = formatCOP(valor * (1 + iva / 100));
   }
-
   function toggleIva() {
     const cb = document.getElementById('aplicaIva');
     document.getElementById('iva').value = cb.checked ? 19 : 0;
     calcularPrecioFinal();
   }
-
   function validarVencimiento() {
     const fecha  = document.getElementById('fechaVencimiento').value;
     const alerta = document.getElementById('alertaVencimiento');

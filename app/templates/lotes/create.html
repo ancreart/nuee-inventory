@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Lote — {{ insumo.descripcion }}{% endblock %}
-{% block page_title %}Registrar Nuevo Lote{% endblock %}
+{% block title %}{{ _('Nuevo Lote') }} — {{ insumo.descripcion }}{% endblock %}
+{% block page_title %}{{ _('Registrar Nuevo Lote') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -13,30 +13,27 @@
         <div class="card-header">
           <h5 class="mb-0">
             <i class="bi bi-layers me-2"></i>
-            Nuevo lote para
+            {{ _('Nuevo lote para') }}
             <strong>{{ insumo.codigo }} — {{ insumo.descripcion }}</strong>
           </h5>
         </div>
         <div class="card-body p-4">
 
-          <!-- Fila 1: Número de lote + Proveedor -->
           <div class="row g-3 mb-3">
             <div class="col-md-5">
               <label class="form-label fw-semibold">
-                N° de Lote <span class="text-danger">*</span>
+                {{ _('N° de Lote') }} <span class="text-danger">*</span>
               </label>
               <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-layers"></i>
-                </span>
+                <span class="input-group-text"><i class="bi bi-layers"></i></span>
                 <input type="text" name="numero_lote" class="form-control"
                   placeholder="Ej: L001" required>
               </div>
             </div>
             <div class="col-md-7">
-              <label class="form-label fw-semibold">Proveedor</label>
+              <label class="form-label fw-semibold">{{ _('Proveedor') }}</label>
               <select name="id_proveedor" class="form-select">
-                <option value="">— Sin proveedor —</option>
+                <option value="">— {{ _('Sin proveedor') }} —</option>
                 {% for p in proveedores %}
                 <option value="{{ p.id }}">{{ p.nombre }} — {{ p.nit }}</option>
                 {% endfor %}
@@ -44,71 +41,61 @@
             </div>
           </div>
 
-          <!-- Fila 2: Cantidad + Costo de compra -->
           <div class="row g-3 mb-3">
             <div class="col-md-5">
               <label class="form-label fw-semibold">
-                Cantidad <span class="text-danger">*</span>
+                {{ _('Cantidad') }} <span class="text-danger">*</span>
               </label>
               <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-boxes"></i>
-                </span>
+                <span class="input-group-text"><i class="bi bi-boxes"></i></span>
                 <input type="number" name="cantidad" class="form-control"
                   min="1" value="1" required>
-                <span class="input-group-text">und</span>
+                <span class="input-group-text">{{ _('und') }}</span>
               </div>
             </div>
             <div class="col-md-7">
-              <label class="form-label fw-semibold">Costo de Compra</label>
+              <label class="form-label fw-semibold">{{ _('Costo de Compra') }}</label>
               <div class="input-group">
                 <span class="input-group-text">$</span>
                 <input type="number" name="costo_compra" class="form-control"
                   step="0.01" min="0" placeholder="0.00">
               </div>
-              <small class="text-muted">Precio al que se compró este lote</small>
+              <small class="text-muted">{{ _('Precio al que se compró este lote') }}</small>
             </div>
           </div>
 
-          <!-- Fila 3: Fecha entrada + Fecha vencimiento -->
           <div class="row g-3 mb-4">
             <div class="col-md-6">
               <label class="form-label fw-semibold">
-                Fecha de Entrada <span class="text-danger">*</span>
+                {{ _('Fecha de Entrada') }} <span class="text-danger">*</span>
               </label>
               <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-calendar-check"></i>
-                </span>
+                <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
                 <input type="date" name="fecha_entrada" class="form-control"
                   value="{{ today.strftime('%Y-%m-%d') }}" required>
               </div>
             </div>
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Fecha de Vencimiento</label>
+              <label class="form-label fw-semibold">{{ _('Fecha de Vencimiento') }}</label>
               <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-calendar-x"></i>
-                </span>
+                <span class="input-group-text"><i class="bi bi-calendar-x"></i></span>
                 <input type="date" name="fecha_vencimiento" class="form-control"
                   id="fechaVenc" onchange="validarVenc()">
               </div>
-              <small id="alertaVenc" class="text-danger fw-bold"
-                style="display:none;">
+              <small id="alertaVenc" class="text-danger fw-bold" style="display:none;">
                 <i class="bi bi-exclamation-triangle-fill"></i>
-                Este lote ya está vencido
+                {{ _('Este lote ya está vencido') }}
               </small>
             </div>
           </div>
 
-          <!-- Botones -->
           <div class="d-flex gap-3 pt-3 border-top">
             <button type="submit" class="btn btn-primary btn-lg px-5">
-              <i class="bi bi-check-circle-fill me-2"></i>Registrar Lote
+              <i class="bi bi-check-circle-fill me-2"></i>{{ _('Registrar Lote') }}
             </button>
             <a href="{{ url_for('lotes.index', id_insumo=insumo.id) }}"
               class="btn btn-outline-secondary btn-lg">
-              <i class="bi bi-x-circle me-2"></i>Cancelar
+              <i class="bi bi-x-circle me-2"></i>{{ _('Cancelar') }}
             </a>
           </div>
 

@@ -1,60 +1,57 @@
 {% extends "base.html" %}
-{% block title %}Productos — Nuée{% endblock %}
-{% block page_title %}Gestión de Insumos{% endblock %}
+{% block title %}{{ _('Productos') }} — Nuée{% endblock %}
+{% block page_title %}{{ _('Gestión de Insumos') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
 
-  <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <p class="text-muted mb-0">Administra el inventario de productos</p>
+    <p class="text-muted mb-0">{{ _('Administra el inventario de productos') }}</p>
     <a href="{{ url_for('insumos.create') }}" class="btn btn-primary">
-      <i class="bi bi-plus-lg"></i> Nuevo Insumo
+      <i class="bi bi-plus-lg"></i> {{ _('Nuevo Insumo') }}
     </a>
   </div>
 
-  <!-- Stats -->
   <div class="row g-4 mb-4">
     <div class="col-md-3">
       <div class="stat-card">
-        <div class="stat-label">Total Insumos</div>
+        <div class="stat-label">{{ _('Total Insumos') }}</div>
         <div class="stat-value">{{ insumos|length }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card success">
-        <div class="stat-label">Activos</div>
+        <div class="stat-label">{{ _('Activos') }}</div>
         <div class="stat-value">{{ insumos|selectattr("activo", "equalto", true)|list|length }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card warning">
-        <div class="stat-label">Por Vencer</div>
+        <div class="stat-label">{{ _('Por Vencer') }}</div>
         <div class="stat-value">{{ por_vencer }}</div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="stat-card danger">
-        <div class="stat-label">Stock Bajo</div>
+        <div class="stat-label">{{ _('Stock Bajo') }}</div>
         <div class="stat-value">{{ stock_bajo }}</div>
       </div>
     </div>
   </div>
 
-  <!-- Tabla -->
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <span><i class="bi bi-box-seam-fill me-2"></i>Listado de Insumos</span>
+      <span><i class="bi bi-box-seam-fill me-2"></i>{{ _('Listado de Insumos') }}</span>
       <div class="position-relative" style="width:350px;">
         <div class="input-group">
           <span class="input-group-text"><i class="bi bi-search"></i></span>
           <input type="text" class="form-control" id="buscarInsumo"
-            placeholder="Buscar por código o descripción..."
+            placeholder="{{ _('Buscar por código o descripción...') }}"
             autocomplete="off"
             oninput="buscarInsumos(this.value)"
             onfocus="if(this.value.length===0) mostrarTodos()">
           <button class="btn btn-outline-secondary" type="button"
-            onclick="mostrarTodos()" title="Ver todos">
+            onclick="mostrarTodos()" title="{{ _('Ver todos') }}">
             <i class="bi bi-list-ul"></i>
           </button>
         </div>
@@ -68,17 +65,17 @@
       <ul class="nav nav-tabs" id="tabsFiltro">
         <li class="nav-item">
           <button class="nav-link active" onclick="filtrarTabla('todos', this)">
-            Todos <span class="badge bg-secondary ms-1">{{ insumos|length }}</span>
+            {{ _('Todos') }} <span class="badge bg-secondary ms-1">{{ insumos|length }}</span>
           </button>
         </li>
         <li class="nav-item">
           <button class="nav-link" onclick="filtrarTabla('activo', this)">
-            Activos <span class="badge bg-success ms-1">{{ insumos|selectattr("activo", "equalto", true)|list|length }}</span>
+            {{ _('Activos') }} <span class="badge bg-success ms-1">{{ insumos|selectattr("activo", "equalto", true)|list|length }}</span>
           </button>
         </li>
         <li class="nav-item">
           <button class="nav-link" onclick="filtrarTabla('inactivo', this)">
-            Inactivos <span class="badge bg-secondary ms-1">{{ insumos|selectattr("activo", "equalto", false)|list|length }}</span>
+            {{ _('Inactivos') }} <span class="badge bg-secondary ms-1">{{ insumos|selectattr("activo", "equalto", false)|list|length }}</span>
           </button>
         </li>
       </ul>
@@ -89,20 +86,20 @@
         <table class="table table-hover mb-0" id="tablaInsumos">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Código</th>
-              <th>Descripción</th>
-              <th>Lote</th>
-              <th>INVIMA</th>
-              <th class="text-end">Valor</th>
-              <th class="text-end">IVA</th>
-              <th class="text-center">Stock</th>
-              <th>Vencimiento</th>
+              <th>{{ _('ID') }}</th>
+              <th>{{ _('Código') }}</th>
+              <th>{{ _('Descripción') }}</th>
+              <th>{{ _('Lote') }}</th>
+              <th>{{ _('INVIMA') }}</th>
+              <th class="text-end">{{ _('Valor') }}</th>
+              <th class="text-end">{{ _('IVA') }}</th>
+              <th class="text-center">{{ _('Stock') }}</th>
+              <th>{{ _('Vencimiento') }}</th>
               {% if session.get('rol') == 'admin' %}
-              <th>Registrado por</th>
+              <th>{{ _('Registrado por') }}</th>
               {% endif %}
-              <th class="text-center">Estado</th>
-              <th class="text-end">Acciones</th>
+              <th class="text-center">{{ _('Estado') }}</th>
+              <th class="text-end">{{ _('Acciones') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -159,31 +156,31 @@
               {% endif %}
               <td class="text-center">
                 {% if insumo.activo %}
-                  <span class="badge bg-success">Activo</span>
+                  <span class="badge bg-success">{{ _('Activo') }}</span>
                 {% else %}
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="badge bg-secondary">{{ _('Inactivo') }}</span>
                 {% endif %}
               </td>
               <td class="text-end">
                 {% if session.get('rol') == 'admin' %}
                 <a href="{{ url_for('insumos.edit', id=insumo.id) }}"
-                  class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                  class="btn btn-sm btn-outline-primary me-1" title="{{ _('Editar') }}">
                   <i class="bi bi-pencil"></i>
                 </a>
                 {% if insumo.activo %}
                 <form method="POST"
                   action="{{ url_for('insumos.inactivar', id=insumo.id) }}"
                   class="d-inline"
-                  onsubmit="return confirm('¿Inactivar este insumo?')">
+                  onsubmit="return confirm('{{ _('¿Inactivar este insumo?') }}')">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   <button type="submit" class="btn btn-sm btn-outline-warning me-1"
-                    title="Inactivar">
+                    title="{{ _('Inactivar') }}">
                     <i class="bi bi-slash-circle"></i>
                   </button>
                 </form>
                 {% endif %}
                 <a href="{{ url_for('insumos.delete', id=insumo.id) }}"
-                  class="btn btn-sm btn-outline-danger" title="Eliminar">
+                  class="btn btn-sm btn-outline-danger" title="{{ _('Eliminar') }}">
                   <i class="bi bi-trash"></i>
                 </a>
                 {% endif %}
@@ -193,10 +190,10 @@
             <tr>
               <td colspan="12" class="text-center py-5 text-muted">
                 <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                No hay insumos registrados
+                {{ _('No hay insumos registrados') }}
                 <br>
                 <a href="{{ url_for('insumos.create') }}" class="btn btn-primary mt-3">
-                  <i class="bi bi-plus-lg me-2"></i>Crear primer insumo
+                  <i class="bi bi-plus-lg me-2"></i>{{ _('Crear primer insumo') }}
                 </a>
               </td>
             </tr>
@@ -231,7 +228,7 @@
   function renderDropdown(lista) {
     const dd = document.getElementById('dropdownInsumos');
     if (lista.length === 0) {
-      dd.innerHTML = '<div class="dropdown-item text-muted">No se encontraron insumos</div>';
+      dd.innerHTML = '<div class="dropdown-item text-muted">{{ _("No se encontraron insumos") }}</div>';
     } else {
       dd.innerHTML = lista.map(i => `
         <a href="#" class="dropdown-item py-2"

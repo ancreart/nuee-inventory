@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Usuario{% endblock %}
-{% block page_title %}Nuevo Usuario{% endblock %}
+{% block title %}{{ _('Nuevo Usuario') }}{% endblock %}
+{% block page_title %}{{ _('Nuevo Usuario') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,13 +9,13 @@
 
       <div class="mb-4">
         <a href="{{ url_for('auth.configuracion') }}" class="btn btn-outline-secondary btn-sm">
-          <i class="bi bi-arrow-left me-1"></i> Volver a Configuración
+          <i class="bi bi-arrow-left me-1"></i> {{ _('Volver a Configuración') }}
         </a>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <i class="bi bi-person-plus me-2"></i>Crear nuevo usuario
+          <i class="bi bi-person-plus me-2"></i>{{ _('Crear nuevo usuario') }}
         </div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('auth.admin_crear_usuario') }}">
@@ -23,7 +23,7 @@
 
             <div class="mb-3">
               {{ form.nombre.label(class="form-label fw-semibold") }}
-              {{ form.nombre(class="form-control", placeholder="Ej: Ana María García") }}
+              {{ form.nombre(class="form-control", placeholder=_('Ej: Ana María García')) }}
               {% if form.nombre.errors %}
                 <div class="text-danger small mt-1">{{ form.nombre.errors[0] }}</div>
               {% endif %}
@@ -31,7 +31,7 @@
 
             <div class="mb-3">
               {{ form.email.label(class="form-label fw-semibold") }}
-              {{ form.email(class="form-control", placeholder="Ej: ana@correo.com") }}
+              {{ form.email(class="form-control", placeholder=_('Ej: ana@correo.com')) }}
               {% if form.email.errors %}
                 <div class="text-danger small mt-1">{{ form.email.errors[0] }}</div>
               {% endif %}
@@ -39,7 +39,7 @@
 
             <div class="mb-3">
               {{ form.username.label(class="form-label fw-semibold") }}
-              {{ form.username(class="form-control", placeholder="Ej: anagarcia") }}
+              {{ form.username(class="form-control", placeholder=_('Ej: anagarcia')) }}
               {% if form.username.errors %}
                 <div class="text-danger small mt-1">{{ form.username.errors[0] }}</div>
               {% endif %}
@@ -47,7 +47,7 @@
 
             <div class="mb-3">
               {{ form.password.label(class="form-label fw-semibold") }}
-              {{ form.password(class="form-control", placeholder="Mínimo 6 caracteres") }}
+              {{ form.password(class="form-control", placeholder=_('Mínimo 6 caracteres')) }}
               {% if form.password.errors %}
                 <div class="text-danger small mt-1">{{ form.password.errors[0] }}</div>
               {% endif %}
@@ -55,7 +55,7 @@
 
             <div class="mb-4">
               {{ form.confirm_password.label(class="form-label fw-semibold") }}
-              {{ form.confirm_password(class="form-control", placeholder="Repite la contraseña") }}
+              {{ form.confirm_password(class="form-control", placeholder=_('Repite la contraseña')) }}
               {% if form.confirm_password.errors %}
                 <div class="text-danger small mt-1">{{ form.confirm_password.errors[0] }}</div>
               {% endif %}
@@ -63,10 +63,10 @@
 
             <div class="d-flex gap-2">
               <button type="submit" class="btn btn-primary">
-                <i class="bi bi-person-plus me-1"></i> Crear usuario
+                <i class="bi bi-person-plus me-1"></i> {{ _('Crear usuario') }}
               </button>
               <a href="{{ url_for('auth.configuracion') }}" class="btn btn-outline-secondary">
-                Cancelar
+                {{ _('Cancelar') }}
               </a>
             </div>
 

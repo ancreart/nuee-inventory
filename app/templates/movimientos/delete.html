@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-
-{% block title %}Eliminar Movimiento{% endblock %}
-{% block page_title %}Eliminar Movimiento{% endblock %}
+{% block title %}{{ _('Eliminar Movimiento') }}{% endblock %}
+{% block page_title %}{{ _('Eliminar Movimiento') }}{% endblock %}
 
 {% block content %}
 <div class="card p-4">
-    <p>¿Seguro que quieres eliminar este movimiento?</p>
+    <p>{{ _('¿Seguro que quieres eliminar este movimiento?') }}</p>
     <form method="post">
-        <button class="btn btn-danger">Sí, eliminar</button>
-        <a href="{{ url_for('movimientos.index') }}" class="btn btn-secondary">Cancelar</a>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-danger">{{ _('Sí, eliminar') }}</button>
+        <a href="{{ url_for('movimientos.index') }}" class="btn btn-secondary">{{ _('Cancelar') }}</a>
     </form>
 </div>
 {% endblock %}

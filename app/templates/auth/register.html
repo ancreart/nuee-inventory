@@ -2,7 +2,7 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>Nuée — Crear cuenta</title>
+    <title>{{ _('Nuée — Crear cuenta') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
         (function() {
@@ -219,10 +219,10 @@
 </head>
 <body>
     <div class="theme-toggle">
-        <button class="theme-toggle-btn" id="btn-light" onclick="setTheme('light')" title="Modo claro">
+        <button class="theme-toggle-btn" id="btn-light" onclick="setTheme('light')" title="{{ _('Modo claro') }}">
             <i class="bi bi-sun-fill"></i>
         </button>
-        <button class="theme-toggle-btn" id="btn-dark" onclick="setTheme('dark')" title="Modo oscuro">
+        <button class="theme-toggle-btn" id="btn-dark" onclick="setTheme('dark')" title="{{ _('Modo oscuro') }}">
             <i class="bi bi-moon-fill"></i>
         </button>
     </div>
@@ -233,7 +233,7 @@
                 <i class="bi bi-droplet-half"></i>
             </div>
             <p class="brand-name">Nuée</p>
-            <p class="brand-subtitle">Crear nueva cuenta</p>
+            <p class="brand-subtitle">{{ _('Crear nueva cuenta') }}</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -246,32 +246,32 @@
 
         <form method="POST" action="{{ url_for('auth.register') }}">
             <div class="form-group">
-                <label class="form-label">Nombre completo</label>
-                <input type="text" name="nombre" class="form-control" required placeholder="Ana María García">
+                <label class="form-label">{{ _('Nombre completo') }}</label>
+                <input type="text" name="nombre" class="form-control" required placeholder="{{ _('Ana María García') }}">
             </div>
             <div class="form-group">
-                <label class="form-label">Correo electrónico</label>
-                <input type="email" name="email" class="form-control" required placeholder="ana@correo.com">
+                <label class="form-label">{{ _('Correo electrónico') }}</label>
+                <input type="email" name="email" class="form-control" required placeholder="{{ _('ana@correo.com') }}">
             </div>
             <div class="form-group">
-                <label class="form-label">Nombre de usuario</label>
+                <label class="form-label">{{ _('Nombre de usuario') }}</label>
                 <input type="text" name="username" class="form-control" required placeholder="anagarcia" autocomplete="off">
             </div>
             <div class="form-group">
-                <label class="form-label">Contraseña</label>
-                <input type="password" name="password" class="form-control" required minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                <label class="form-label">{{ _('Contraseña') }}</label>
+                <input type="password" name="password" class="form-control" required minlength="6" placeholder="{{ _('Mínimo 6 caracteres') }}" autocomplete="new-password">
             </div>
             <div class="form-group">
-                <label class="form-label">Confirmar contraseña</label>
-                <input type="password" name="confirm_password" class="form-control" required placeholder="Repite la contraseña" autocomplete="new-password">
+                <label class="form-label">{{ _('Confirmar contraseña') }}</label>
+                <input type="password" name="confirm_password" class="form-control" required placeholder="{{ _('Repite la contraseña') }}" autocomplete="new-password">
             </div>
             <button type="submit" class="btn-auth">
-                Crear cuenta
+                {{ _('Crear cuenta') }}
             </button>
         </form>
 
         <div class="auth-footer">
-            <a href="{{ url_for('auth.login') }}">← Volver al login</a>
+            <a href="{{ url_for('auth.login') }}">← {{ _('Volver al login') }}</a>
         </div>
     </div>
 
