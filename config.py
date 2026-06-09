@@ -10,7 +10,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     """Configuración base común a todos los entornos."""
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'woody2026')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_PERMANENT = False
     PERMANENT_SESSION_LIFETIME = timedelta(days=30)
